@@ -1,0 +1,140 @@
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>OpenWeek 2017 - Développement de plugins pour ICTV v2</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/css/reveal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/css/theme/blood.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/lib/css/zenburn.css">
+
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/' + (window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css');
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+</head>
+
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section id="titre">
+            <h1>OpenWeek 2017</h1>
+            <h2>Développement de plugins pour ICTV v2</h2>
+            <a href="https://github.com/OpenWeek/ictv-plugins" target="_blank">https://github.com/OpenWeek/ictv-plugins</a>
+            <br>
+            <br>
+            <small>Maxime Piraux - <a href="mailto:maxime.piraux@student.uclouvain.be" target="_blank">maxime.piraux@student.uclouvain.be</a></small>
+        </section>
+        <section id="intro">
+            <h2>Qu'est ce que ICTV ?</h2>
+            <ul>
+                <li>ICTV est un <a href="https://fr.wikipedia.org/wiki/Syst%C3%A8me_de_gestion_de_contenu" target="_blank">Système de gestion de contenu</a> pour l'<a href="https://fr.wikipedia.org/wiki/Affichage_dynamique" target="_blank">affichage dynamique</a>.</li>
+                <li>ICTV vous permet de créer et modifier du contenu qui sera affiché sur un réseau d'écrans.</li>
+                <li>L'interface d'ICTV est entièrement basée sur le web. Tout depuis la gestion du contenu jusqu'a sa reproduction sur les écrans est effectué dans un navigateur.</li>
+                <li>ICTV est facilement extensible, grace à un système de plugins simple et puissant.</li>
+            </ul>
+        </section>
+        <section id="version">
+            <h2>Pourquoi une version 2 ?</h2>
+            <ul>
+                <li>Affichage limité à des images statiques</li>
+                <li>Pas de videos ou d'images animées</li>
+                <li>Diaporama inerte, aucune transition dynamique possible</li>
+                <li>Interface trop austère</li>
+                <li>Opportunité de remise a plat de la conception du logiciel</li>
+            </ul>
+        </section>
+        <section id="concepts">
+            <h1>Trois concepts clés</h1>
+            <ul>
+                <li><a href="#/plugins">Plugins</a></li>
+                <li><a href="#/channels">Channels</a></li>
+                <li><a href="#/screens">Screens</a></li>
+            </ul>
+        </section>
+        <section id="plugins">
+            <h2>Plugins</h2>
+            <p>Tout contenu provient d'un plugin.</p>
+            <ul>
+                <li>Un plugin peut être un programme automatisé.</li>
+                <li>E.g. un programme qui créer du contenu à partir d'un flux RSS.</li>
+                <li>Interaction plus large avec les utilisateurs possible à travers l'intégration de sous-application web propre au plugin dans ICTV.</li>
+                <li>La configuration des plugins ce fait via l'interface web d'ICTV.</li>
+            </ul>
+        </section>
+        <section id="plugins-2">
+            <h2>Plugins</h2>
+            <p>Il existe déjà des plugins utiles</p>
+            <ul>
+                <li><strong>editor</strong> est un editeur web permettant de créer des diaporamas.</li>
+                <li><strong>embed</strong> permet d'intégrer des pages web dans le système.</li>
+                <li><strong>rss</strong> permet d'extraire et de transformer des flux RSS en diaporamas.</li>
+                <li><strong>cal</strong> créé des annonces sur bases d'évenements de calendrier.</li>
+                <li><strong>img-grabber</strong> extrait des images de pages web.</li>
+            </ul>
+        </section>
+        <section id="channels">
+            <h2>Channels</h2>
+            <ul>
+                <li>Elles permettent d'organiser le contenu.</li>
+                <li>Chaque channel contient un type d'information thématique.</li>
+                <li>Chaque channel est une instance, une paramétrisation, d'un plugin.</li>
+                <li>Les channels peuvent être publiques ou restreintes à certains utilisateurs.</li>
+            </ul>
+        </section>
+        <section id="screens">
+            <h2>Screens</h2>
+            <ul>
+                <li>Une sortie affichant du contenu</li>
+                <li>Peut être physique, i.e. un écran, ou virtuel, i.e. une page web.</li>
+                <li>Les écrans le contenu des channels auxquelles ils sont abonnés.</li>
+                <li>Les abonnements d'un écran vont déterminé le contenu qui y sera affiché.</li>
+            </ul>
+        </section>
+        <section id="contenu">
+            <h2>Contenu</h2>
+            <ul>
+                <li>Un diaporama de slides utilisant <a href="http://lab.hakim.se/reveal-js/" target="_blank">reveal.js</a></li>
+                <li>Utilise les nombreuses possibilités offertes par HTML5 et CSS3.</li>
+                <li>Compositions complexes, GIFs, videos et images de fonds sont possibles.</li>
+            </ul>
+        </section>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/lib/js/head.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/js/reveal.js"></script>
+
+<script>
+    var cdn = 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/';
+    Reveal.initialize({
+        width: 1440,
+        height: 1080,
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'slide',
+        dependencies: [
+            {
+                src: cdn + 'plugin/highlight/highlight.js', async: true, callback: function () {
+                    hljs.initHighlightingOnLoad();
+                }
+            }
+        ]
+    });
+</script>
+
+</body>
+</html>
