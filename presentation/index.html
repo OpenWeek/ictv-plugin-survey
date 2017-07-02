@@ -39,20 +39,20 @@
         <section id="intro">
             <h2>Qu'est ce que ICTV ?</h2>
             <ul>
-                <li>ICTV est un <a href="https://fr.wikipedia.org/wiki/Syst%C3%A8me_de_gestion_de_contenu" target="_blank">Système de gestion de contenu</a> pour l'<a href="https://fr.wikipedia.org/wiki/Affichage_dynamique" target="_blank">affichage dynamique</a>.</li>
+                <li>ICTV est un <a href="https://fr.wikipedia.org/wiki/Syst%C3%A8me_de_gestion_de_contenu" target="_blank">système de gestion de contenu</a> pour l'<a href="https://fr.wikipedia.org/wiki/Affichage_dynamique" target="_blank">affichage dynamique</a>.</li>
                 <li>ICTV vous permet de créer et modifier du contenu qui sera affiché sur un réseau d'écrans.</li>
-                <li>L'interface d'ICTV est entièrement basée sur le web. Tout depuis la gestion du contenu jusqu'a sa reproduction sur les écrans est effectué dans un navigateur.</li>
-                <li>ICTV est facilement extensible, grace à un système de plugins simple et puissant.</li>
+                <li>L'interface d'ICTV est entièrement basée sur le web. Tout depuis la gestion du contenu jusqu'à sa reproduction sur les écrans est effectué dans un navigateur.</li>
+                <li>ICTV est facilement extensible grâce à un système de plugins simple et puissant.</li>
             </ul>
         </section>
         <section id="version">
             <h2>Pourquoi une version 2 ?</h2>
             <ul>
                 <li>Affichage limité à des images statiques</li>
-                <li>Pas de videos ou d'images animées</li>
+                <li>Pas de vidéos ou d'images animées</li>
                 <li>Diaporama inerte, aucune transition dynamique possible</li>
                 <li>Interface trop austère</li>
-                <li>Opportunité de remise a plat de la conception du logiciel</li>
+                <li>Opportunité de remise à plat de la conception du logiciel</li>
             </ul>
         </section>
         <section id="concepts">
@@ -68,19 +68,19 @@
             <p>Tout contenu provient d'un plugin.</p>
             <ul>
                 <li>Un plugin peut être un programme automatisé.</li>
-                <li>E.g. un programme qui créer du contenu à partir d'un flux RSS.</li>
-                <li>Interaction plus large avec les utilisateurs possible à travers l'intégration de sous-application web propre au plugin dans ICTV.</li>
-                <li>La configuration des plugins ce fait via l'interface web d'ICTV.</li>
+                <li>E.g. un programme qui crée du contenu à partir d'un flux RSS.</li>
+                <li>Interaction plus large avec les utilisateurs possible à travers l'intégration d'une sous-application web propre au plugin dans ICTV.</li>
+                <li>La configuration des plugins se fait via l'interface web d'ICTV.</li>
             </ul>
         </section>
         <section id="plugins-2">
             <h2>Plugins</h2>
-            <p>Il existe déjà des plugins utiles</p>
+            <p>Il existe déjà des plugins utiles:</p>
             <ul>
-                <li><strong>editor</strong> est un editeur web permettant de créer des diaporamas.</li>
+                <li><strong>editor</strong> est un éditeur web permettant de créer des diaporamas.</li>
                 <li><strong>embed</strong> permet d'intégrer des pages web dans le système.</li>
                 <li><strong>rss</strong> permet d'extraire et de transformer des flux RSS en diaporamas.</li>
-                <li><strong>cal</strong> créé des annonces sur bases d'évenements de calendrier.</li>
+                <li><strong>cal</strong> crée des annonces sur base d'événements de calendrier.</li>
                 <li><strong>img-grabber</strong> extrait des images de pages web.</li>
             </ul>
         </section>
@@ -98,8 +98,8 @@
             <ul>
                 <li>Une sortie affichant du contenu</li>
                 <li>Peut être physique, i.e. un écran, ou virtuel, i.e. une page web.</li>
-                <li>Les écrans le contenu des channels auxquelles ils sont abonnés.</li>
-                <li>Les abonnements d'un écran vont déterminé le contenu qui y sera affiché.</li>
+                <li>Les écrans diffusent le contenu des channels auxquelles ils sont abonnés.</li>
+                <li>Les abonnements d'un écran vont déterminer le contenu qui y sera affiché.</li>
             </ul>
         </section>
         <section id="contenu">
@@ -107,7 +107,7 @@
             <ul>
                 <li>Un diaporama de slides utilisant <a href="http://lab.hakim.se/reveal-js/" target="_blank">reveal.js</a></li>
                 <li>Utilise les nombreuses possibilités offertes par HTML5 et CSS3.</li>
-                <li>Compositions complexes, GIFs, videos et images de fonds sont possibles.</li>
+                <li>Compositions complexes, GIFs, vidéos et images de fond sont possibles.</li>
             </ul>
         </section>
         <section id="technologies">
@@ -123,10 +123,137 @@
                 <li>
                     Coté serveur
                     <ul>
-                        <li><a href="https://www.python.org/">Python 3.5+</a></li>
-                        <li><a href="http://webpy.org/">web.py</a> comme framework web pour Python.</li>
+                        <li><a href="https://www.python.org/" target="_blank">Python 3.5+</a></li>
+                        <li><a href="http://webpy.org/" target="_blank">web.py</a> comme framework web pour Python.</li>
                     </ul>
                 </li>
+            </ul>
+        </section>
+        <section id="intermede">
+            <h1>Intermède</h1>
+            <h3>Votre mission</h3>
+            <p>Imaginer un nouveau plugin utile pour ICTV, pas nécessairement lié à l'INGI.</p>
+            <p>Plus il peut être utilisé dans de nombreuses situations, plus son intérêt est grand.</p>
+        </section>
+        <section id="idees">
+            <h2>Un peu d'inspiration</h2>
+            <p>Actuellement, il n'y a pas d'interactions possibles pour le public regardant les écrans.</p>
+            <p>Un plugin de sondage permettrait d'interroger les audiences et d'interagir avec ICTV.</p>
+        </section>
+        <section id="python-intro">
+            <h1>Python</h1>
+            <ul>
+                <li>Démarré en 1990 par Guido Van Rossum</li>
+                <li>Aujourd'hui à la version 3.6 (décembre 2016)</li>
+                <li>Langage interpreté, multi-paradigme et multiplateformes</li>
+                <li>Selon <a href="http://pypl.github.io/PYPL.html" target="_blank">PYPL</a><blockquote>Python grew the most in the last 5 years (8.7%)</blockquote></li>
+            </ul>
+            <img src="pypl.png">
+        </section>
+        <section id="python-intro-2">
+            <h1>Python</h1>
+            <ul>
+                <li>Syntaxe élégante</li>
+                <li>Conception axée vers la simplicité d'utilisation, sans compromettre la maintenabilité</li>
+                <li>Interpreteur intégré pour tester facilement des bouts de code</li>
+                <li>Gestion automatique de la mémoire</li>
+                <li>Intégration de modules en C/C++ possible</li>
+            </ul>
+        </section>
+        <section id="python-paradigms">
+            <h2>Paradigmes & typage</h2>
+            <ul>
+                <li>Paradigme procédurale</li>
+                <li>Paradigme orienté objet</li>
+                <li>Paradigme fonctionnel</li>
+                <li>Typage dynamique, comme JavaScript
+                    <ul>
+                        <li><code style="color: darkorange;">String string = "Hello, world!";</code></li>
+                        <li><code style="color: green;">string = "Hello, world!"</code></li>
+                    </ul>
+                </li>
+                <li>Typage fort, comme Java mais avec peu de conversions implicites
+                    <ul>
+                        <li><code style="color: darkorange;">String result = "Hello, world!" + 2;</code></li>
+                        <li><code style="color: green;">result = "Hello, world!" + str(2)</code></li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section id="python-intermede">
+            <h4 style="text-transform: inherit;">Une seule source d'information: la documentation officielle <a href="https://docs.python.org/3/" target="_blank">https://docs.python.org</a></h4>
+            <strong><a href="https://docs.python.org/3/tutorial/" target="_blank">Le tutoriel officiel</a></strong>
+        </section>
+        <section id="python-types">
+            <h2>Types</h2>
+            <p>Toute valeur est un objet</p>
+            <ul>
+                <li>Pour les nombres: <code>int</code> et <code>float</code></li>
+                <li>Pour les chaines de caractères: <code>str</code>
+                    <ul><li><code>''</code> et <code>""</code> pour les délimiter.</li></ul>
+                </li>
+                <li>Pour les booléens: <code>bool</code>
+                    <ul><li><code>True</code> et <code>False</code></li></ul>
+                </li>
+                <li>Utilisé principalement pour des conversions explicites
+                    <ul><li><code>str(2)</code> équivaut à <code>"2"</code> équivaut à <code>'2'</code></li></ul>
+                </li>
+            </ul>
+        </section>
+        <section id="python-variables">
+            <h2>Variables</h2>
+            <ul>
+                <li>Déclarées et initialisées en une instruction.</li>
+                <li>Au moins une lettre, suivi de chiffres, lettres ou le caractère <code>_</code></li>
+                <li>La convention de nomage est le <i>snake case</i>, comme <code>nom_de_variable</code></li>
+                <li>Pas d'opérateur pour déclarer une variable, une première assignation dans le contexte courant compte comme déclaration.</li>
+                <li>Les variables commençant par <code>_</code> indiquent qu'elles sont privées.</li>
+                <li>L'opérateur <code>del</code> permet de supprimer une variable du contexte.</li>
+                <li>Pas de type explicitement associé à une variable</li>
+            </ul>
+        </section>
+        <section id="python-strings">
+            <h2>Strings</h2>
+            <ul style="width: 80%;">
+                <li><code>word = "Python"</code></li>
+                <li>Répété avec <code>*</code>, concatené avec <code>+</code></li>
+                <li>Peut être indexé:
+                    <pre><code> +---+---+---+---+---+---+
+ | P | y | t | h | o | n |
+ +---+---+---+---+---+---+
+ 0   1   2   3   4   5   6
+-6  -5  -4  -3  -2  -1
+</code></pre>
+                    <ul><li><code>word[2]</code> vaut <code>'t'</code></li></ul>
+                </li>
+                <li>Peut être <i>découpé (sliced)</i>:
+
+                    <pre><code>>>> word[0:2]  # characters from position 0 (included) to 2 (excluded)
+'Py'
+>>> word[2:5]  # characters from position 2 (included) to 5 (excluded)
+'tho'</code></pre>
+
+                </li>
+                <li>Les strings sont immutables.</li>
+            </ul>
+        </section>
+        <section id="python-lists">
+            <h2>Lists</h2>
+            <ul style="width: 80%;">
+                <li><code>squares = [1, 4, 9, 16, 25]</code></li>
+                <li>Elle peut être indexée et découpée.</li>
+                <li>Les listes sont mutables.</li>
+                <li>Elles peuvent contenir des objet de type différent.</li>
+            </ul>
+        </section>
+        <section id="python-sets-dicts">
+            <h2>Sets & dictionaires</h2>
+            <ul style="width: 80%;">
+                <li><pre><code>odd_numbers = {1, 3, 5, 7, 9}
+capitals = {'Belgium': 'Brussels', 'France': 'Paris', 'Canada': 'Ottawa'}</code></pre></li>
+                <li><code>2 in odd_numbers</code> équivaut à <code>False</code></li>
+                <li><code>capitals['Canada']</code> équivaut à <code>'Ottawa'</code></li>
+                <li><code>'France' in capitals</code> équivaut à <code>True</code></li>
             </ul>
         </section>
     </div>
@@ -144,10 +271,14 @@
         progress: true,
         history: true,
         center: true,
+        slideNumber: true,
         transition: 'slide',
         dependencies: [
             {
                 src: cdn + 'plugin/highlight/highlight.js', async: true, callback: function () {
+                    hljs.configure({
+                        languages: ['python']
+                    });
                     hljs.initHighlightingOnLoad();
                 }
             }
