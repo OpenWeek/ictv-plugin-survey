@@ -157,6 +157,7 @@
                 <li>Conception axée vers la simplicité d'utilisation, sans compromettre la maintenabilité</li>
                 <li>Interpréteur intégré pour tester facilement des bouts de code</li>
                 <li>Gestion automatique de la mémoire</li>
+                <li>Librairie standard très riche</li>
                 <li>Intégration de modules en C/C++ possible</li>
             </ul>
         </section>
@@ -182,6 +183,7 @@
         </section>
         <section id="python-intermede">
             <h4 style="text-transform: inherit;">Une seule source d'information: la documentation officielle <a href="https://docs.python.org/3/" target="_blank">https://docs.python.org</a></h4>
+            <iframe src="https://docs.python.org/3/tutorial/" class="stretch"></iframe>
             <strong><a href="https://docs.python.org/3/tutorial/" target="_blank">Le tutoriel officiel</a></strong>
         </section>
         <section id="python-types">
@@ -386,6 +388,29 @@ capitals = {'Belgium': 'Brussels', 'France': 'Paris', 'Canada': 'Ottawa'}</code>
                 print(point.dist_to_origin())
             </code></pre>
         </section>
+        <section id="python-modules-import">
+            <h2>Modules et import</h2>
+            <p>Un module est un fichier python importable depuis d'autres modules.</p>
+            <div style="display: flex;">
+                <pre style="flex: 1;"><code data-trim>
+                    import math
+                    math.sqrt(4)
+                </code></pre>
+                <pre style="flex: 1;"><code data-trim>
+                    from math import sqrt
+                    sqrt(4)
+                </code></pre>
+                <pre style="flex: 1;"><code data-trim>
+                    from math import sqrt as sq
+                    sq(4)
+                </code></pre>
+            </div>
+            <p>Un fichier <code>__init__.py</code> permet a Python de considérer son dossier parent comme un module.</p>
+            Lorsqu'un module est importé, tout son contexte global est exécuté.
+            <pre><code>if __name__ == "__main__":
+    # execute only if run as a script
+    main()</code></pre>
+        </section>
         <section id="python-gestion-exceptions">
             <h2>Gestion des exceptions</h2>
             <pre><code data-trim>
@@ -395,6 +420,278 @@ capitals = {'Belgium': 'Brussels', 'France': 'Paris', 'Canada': 'Ottawa'}</code>
                     print('An exception flew by!')
                     raise
             </code></pre>
+        </section>
+        <section id="intro-plugin">
+            <h1>Plugins dans ICTV</h1>
+        </section>
+        <!--
+            systeme de templating
+            montrer une template?
+            montrer pluginSlide et Plugincapsule
+         -->
+        <section id="plugin-schema">
+            <h2>Execution</h2>
+            <img class="stretch" src="schema.svg" style="background: rgba(255, 255, 255, 0.66);">
+        </section>
+        <section id="plugin-slide-capsule">
+            <h2>Slides & capsules</h2>
+            <pre><code data-trim style="max-height: none;">
+                class PluginSlide(metaclass=ABCMeta):
+                    @abstractmethod
+                    def get_duration(self):
+                        pass
+
+                    @abstractmethod
+                    def get_content(self):
+                        pass
+
+                    @abstractmethod
+                    def get_template(self):
+                        pass
+
+                class PluginCapsule(metaclass=ABCMeta):
+                    @abstractmethod
+                    def get_slides(self):
+                        pass
+
+                    @abstractmethod
+                    def get_theme(self):
+                        pass
+            </code></pre>
+        </section>
+        <section id="plugin-contenu-slide">
+            <h2>Contenu d'une slide</h2>
+            <pre><code data-trim>
+                {
+                    '[field-type]-[field-number]': {'[input-type]': '[field-data]'},
+                    ...
+                }
+            </code></pre>
+            <div style="display: flex; height: 50%;" >
+                <div style="flex: 1;">
+                    <h5 style="text-transform: none">field-type</h5>
+                    <code>
+                    <ul>
+                        <li>title</li>
+                        <li>subtitle</li>
+                        <li>text</li>
+                        <li>logo</li>
+                        <li>image</li>
+                        <li>background</li>
+                    </ul>
+                    </code>
+                </div>
+                <div style="flex: 1;">
+                    <h5 style="text-transform: none">input-type</h5>
+                    <ul>
+                        <li><code>title</code>, <code>subtitle</code>, <code>text</code>: <ul><li><code>text</code></li></ul></li>
+                        <li><code>logo</code>, <code>image</code>:
+                            <code><ul>
+                                <li>src</li>
+                                <li>qrcode</li>
+                            </ul></code>
+                        </li>
+                        <li><code>background</code>:
+                            <code><ul>
+                                <li>src</li>
+                                <li>size</li>
+                                <li>qrcode</li>
+                            </ul></code>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section id="plugin-renderer">
+            <h2>Renderer</h2>
+            <p>Transforme la représentation abstraite d'une slide en HTML pour reveal.js via un template.</p>
+            <div style="display: flex;">
+                <pre style="flex: 2;"><code data-trim style="max-height: none;">
+                    html
+                    $def with (slide, theme)
+                    <section>
+                        <div class="logo logo-ucl">
+                            $:logo(content=slide, number=1)
+                        </div>
+                        <div class="logo logo-fac">
+                            $:logo(content=slide, number=2)
+                        </div>
+                        <div class="content">
+                            $:title(content=slide, number=1)
+                            $:subtitle(content=slide, number=1)
+                            <table>
+                                <tr>
+                                    <td style="width:34%">
+                                        $:img(content=slide, number=1)
+                                    </td>
+                                    <td style="width:66%; vertical-align:middle">
+                                        $:text(content=slide, number=1)
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </section>
+                </code></pre>
+                <pre style="flex: 1;"><code data-trim style="max-height: none;">
+                    {
+                        'title-1': {'text': "Awesome title"},
+                        'subtitle-1': {'text': "Subtile subtitle"},
+                        'text-1': {'text': "Very long textual text here"},
+                        'image-1': {'src': "img/michelfra.gif"},
+                        'logo-1': {'src': "ingi.gif"},
+                        'logo-2': {'src': "ucl.gif"}
+                    }
+                </code></pre>
+            </div>
+        </section>
+        <section id="plugin-anatomie">
+            <h2>Anatomie</h2>
+            <pre><code data-trim>
+                ictv
+                └── plugins
+                    └── img-grabber
+                        ├── __init__.py
+                        ├── config.yaml
+                        └── img-grabber.py
+            </code></pre>
+            <ul>
+                <li><code>config.yaml</code> définit la configuration nécessaire a une instance du plugin.</li>
+                <li><code>img-grabber.py</code> contient une fonction <code>get_content()</code>.</li>
+                <li><code>__init__.py</code> permet a Python de considérer ce dossier comme un module.</li>
+            </ul>
+        </section>
+        <section id="plugin-config">
+            <h2>Fichier de configuration</h2>
+            <div style="display: flex;">
+            <pre style="flex: 1;"><code data-trim style="max-height: none;">
+                plugin:
+                  webapp: no
+                  static: no
+                  description: |
+                    This plugin embeds an image and a text
+                    as legend in a simple way.
+                    It uses CSS selector to specify which content
+                    to grab from the specified page.
+                  dependencies:
+                    - pyquery
+                channels_params:
+                  url:
+                    name: 'URL of the page'
+                    placeholder: 'Url format'
+                    type: string
+                    default: 'http://apod.nasa.gov/apod/astropix.html'
+                  image_selector:
+                    name: 'Image CSS selector'
+                    placeholder: 'CSS selector'
+                    type: string
+                    default: 'img'
+                  src_attr:
+                    name: 'Attribute holding the image source url'
+                    placeholder: 'HTML attribute'
+                    type: string
+                    default: 'src'
+            </code></pre>
+            <pre style="flex: 1;"><code style="max-height: none;">
+  text_selector:
+  name: 'Text CSS selector'
+  placeholder: 'CSS selector'
+  type: string
+  default: 'center>b'
+  alternative_text:
+  name: 'Alternative text if a text cannot be found with the selector above'
+  placeholder: 'Plain text'
+  type: string
+  default: ''
+  duration:
+  name: 'Capsule duration in seconds'
+  placeholder: 'Capsule duration in seconds'
+  type: int
+  default: 10
+  min: 1
+  qrcode:
+  name: 'Embed the url of the page as a QR code'
+  type: bool
+  default: no
+            </code></pre>
+            </div>
+        </section>
+        <section id="plugin-slide">
+            <h2>Slide</h2>
+            <pre><code data-trim style="max-height: none;">
+                class ImgGrabberSlide(PluginSlide):
+                    def __init__(self, img_src, text, duration, qrcode):
+                        self._duration = duration
+                        self._content = {'background-1': {'src': img_src, 'size': 'contain'},
+                                         'text-1': {'text': text}}
+                        if qrcode:
+                            self._content['image-1'] = {'qrcode': qrcode}
+                        self._has_qr_code = qrcode is not None
+
+                    def get_duration(self):
+                        return self._duration
+
+                    def get_content(self):
+                        return self._content
+
+                    def get_template(self):
+                        return 'template-background-text-qr'
+            </code></pre>
+        </section>
+        <section id="plugin-capsule">
+            <h2>Capsule</h2>
+            <pre><code data-trim style="max-height: none;">
+                class ImgGrabberCapsule(PluginCapsule):
+                    def __init__(self, img_src, text, duration, qrcode=None):
+                        self._slides = [ImgGrabberSlide(img_src, text, duration, qrcode)]
+
+                    def get_slides(self):
+                        return self._slides
+
+                    def get_theme(self):
+                        return None
+            </code></pre>
+        </section>
+        <section id="plugin-get-content">
+            <h2>get_content</h2>
+            <pre style="width: 95%;"><code data-trim style="max-height: none;">
+                def get_content(channel_id):
+                    channel = Channel.get(channel_id)
+
+                    logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
+                    logger = get_logger('img-grabber', channel)
+
+                    url = channel.get_config_param('url')
+                    image_selector = channel.get_config_param('image_selector')
+                    attr = channel.get_config_param('src_attr')
+                    qrcode = channel.get_config_param('qrcode')
+
+                    if not url or not image_selector or not attr:
+                        logger.warning('Some of the required parameters are empty', extra=logger_extra)
+                        return []
+
+                    try:
+                        doc = PyQuery(url=url)
+                    except Exception as e:
+                        raise MisconfiguredParameters('url', url, 'The following error was encountered: %s.' % str(e))
+
+                    img = doc(image_selector).eq(0).attr(attr)
+                    if not img:
+                        message = 'Could not find img with CSS selector %s and attribute %s' % (image_selector, attr)
+                        raise MisconfiguredParameters('image_selector', image_selector, message)
+                                  .add_faulty_parameter('src_attr', attr, message)
+                    if img[:4] != 'http' and img[:4] != 'ftp:':
+                        img = '{uri.scheme}://{uri.netloc}/'.format(uri=urlparse(url)) + img
+
+                    duration = channel.get_config_param('duration') * 1000
+                    text = doc(channel.get_config_param('text_selector')).eq(0).text()
+                    alternative_text = channel.get_config_param('alternative_text')
+                    return [ImgGrabberCapsule(img, text if text else alternative_text, duration,
+                                              qrcode=url if qrcode else None)]
+            </code></pre>
+        </section>
+        <section id="the-end">
+            <h1>Et voila</h1>
+            <h3>Pef</h3>
         </section>
     </div>
 </div>
@@ -417,7 +714,7 @@ capitals = {'Belgium': 'Brussels', 'France': 'Paris', 'Canada': 'Ottawa'}</code>
             {
                 src: cdn + 'plugin/highlight/highlight.js', async: true, callback: function () {
                     hljs.configure({
-                        languages: ['python']
+                        languages: ['python', 'html', 'yaml']
                     });
                     hljs.initHighlightingOnLoad();
                 }
