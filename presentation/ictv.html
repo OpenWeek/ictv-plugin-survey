@@ -4,9 +4,6 @@
 
     <title>OpenWeek 2017 - Développement de plugins pour ICTV v2</title>
 
-    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
-    <meta name="author" content="Hakim El Hattab">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -140,295 +137,9 @@
             <p>Actuellement, il n'y a pas d'interactions possibles pour le public regardant les écrans.</p>
             <p>Un plugin de sondage permettrait d'interroger les audiences et d'interagir avec ICTV.</p>
         </section>
-        <section id="python-intro">
-            <h1>Python</h1>
-            <ul>
-                <li>Démarré en 1990 par Guido Van Rossum</li>
-                <li>Aujourd'hui à la version 3.6 (décembre 2016)</li>
-                <li>Langage intreprété, multi-paradigme et multiplateformes</li>
-                <li>Selon <a href="http://pypl.github.io/PYPL.html" target="_blank">PYPL</a><blockquote>Python grew the most in the last 5 years (8.7%)</blockquote></li>
-            </ul>
-            <img src="pypl.png">
-        </section>
-        <section id="python-intro-2">
-            <h1>Python</h1>
-            <ul>
-                <li>Syntaxe élégante</li>
-                <li>Conception axée vers la simplicité d'utilisation, sans compromettre la maintenabilité</li>
-                <li>Interpréteur intégré pour tester facilement des bouts de code</li>
-                <li>Gestion automatique de la mémoire</li>
-                <li>Librairie standard très riche</li>
-                <li>Intégration de modules en C/C++ possible</li>
-            </ul>
-        </section>
-        <section id="python-paradigms">
-            <h2>Paradigmes & typage</h2>
-            <ul>
-                <li>Paradigme procédural</li>
-                <li>Paradigme orienté objet</li>
-                <li>Paradigme fonctionnel</li>
-                <li>Typage dynamique, comme JavaScript
-                    <ul>
-                        <li><code style="color: darkorange;">String string = "Hello, world!";</code></li>
-                        <li><code style="color: green;">string = "Hello, world!"</code></li>
-                    </ul>
-                </li>
-                <li>Typage fort, comme Java mais avec peu de conversions implicites
-                    <ul>
-                        <li><code style="color: darkorange;">String result = "Hello, world!" + 2;</code></li>
-                        <li><code style="color: green;">result = "Hello, world!" + str(2)</code></li>
-                    </ul>
-                </li>
-            </ul>
-        </section>
-        <section id="python-intermede">
-            <h4 style="text-transform: inherit;">Une seule source d'information: la documentation officielle <a href="https://docs.python.org/3/" target="_blank">https://docs.python.org</a></h4>
-            <iframe src="https://docs.python.org/3/tutorial/" class="stretch"></iframe>
-            <strong><a href="https://docs.python.org/3/tutorial/" target="_blank">Le tutoriel officiel</a></strong>
-        </section>
-        <section id="python-types">
-            <h2>Types</h2>
-            <p>Toute valeur est un objet</p>
-            <ul>
-                <li>Pour les nombres: <code>int</code> et <code>float</code></li>
-                <li>Pour les chaînes de caractères: <code>str</code>
-                    <ul><li><code>''</code> et <code>""</code> pour les délimiter.</li></ul>
-                </li>
-                <li>Pour les booléens: <code>bool</code>
-                    <ul><li><code>True</code> et <code>False</code></li></ul>
-                </li>
-                <li>Utilisé principalement pour des conversions explicites
-                    <ul><li><code>str(2)</code> équivaut à <code>"2"</code> équivaut à <code>'2'</code></li></ul>
-                </li>
-                <li><code>None</code> est l'équivalent de <code>null</code> en Java.</li>
-            </ul>
-        </section>
-        <section id="python-variables">
-            <h2>Variables</h2>
-            <ul>
-                <li>Déclarées et initialisées en une instruction.</li>
-                <li>Au moins une lettre, suivie de chiffres, lettres ou le caractère <code>_</code></li>
-                <li>La convention de nomage est le <i>snake case</i>, e.g. <code>nom_de_variable</code></li>
-                <li>Pas d'opérateur pour déclarer une variable, une première assignation dans le contexte courant compte comme une déclaration.</li>
-                <li>Les variables commençant par <code>_</code> indiquent qu'elles sont privées.</li>
-                <li>L'opérateur <code>del</code> permet de supprimer une variable du contexte.</li>
-                <li>Pas de type explicitement associé à une variable</li>
-            </ul>
-        </section>
-        <section id="python-strings">
-            <h2>Strings</h2>
-            <ul style="width: 80%;">
-                <li><code>word = "Python"</code></li>
-                <li>Répété avec <code>*</code>, concatené avec <code>+</code></li>
-                <li>Peut être indexé:
-                    <pre><code> +---+---+---+---+---+---+
- | P | y | t | h | o | n |
- +---+---+---+---+---+---+
- 0   1   2   3   4   5   6
--6  -5  -4  -3  -2  -1
-</code></pre>
-                    <ul><li><code>word[2]</code> vaut <code>'t'</code></li></ul>
-                </li>
-                <li>Peut être <i>découpé (sliced)</i>:
-
-                    <pre><code>>>> word[0:2]  # characters from position 0 (included) to 2 (excluded)
-'Py'
->>> word[2:5]  # characters from position 2 (included) to 5 (excluded)
-'tho'</code></pre>
-
-                </li>
-                <li>Les strings sont immutables.</li>
-            </ul>
-        </section>
-        <section id="python-lists-tuples">
-            <h2>Lists & tuples</h2>
-            <ul>
-                <li><code>squares = [1, 4, 9, 16, 25]</code></li>
-                <li>Elle peut être indexée et découpée.</li>
-                <li>Les listes sont mutables.</li>
-                <li>Elles peuvent contenir des objet de type différents.</li>
-                <li><code>coordinates = (4.2, 3.6)</code></li>
-                <li>Indexable, découpable</li>
-                <li>Immutable</li>
-                <li>Unpacking: <code>x, y = coordinates</code></li>
-            </ul>
-        </section>
-        <section id="python-sets-dicts">
-            <h2>Sets & dictionary</h2>
-            <pre><code>odd_numbers = {1, 3, 5, 7, 9}
-capitals = {'Belgium': 'Brussels', 'France': 'Paris', 'Canada': 'Ottawa'}</code></pre>
-            <ul>
-                <li><code>2 in odd_numbers</code> équivaut à <code>False</code></li>
-                <li><code>capitals['Canada']</code> équivaut à <code>'Ottawa'</code></li>
-                <li><code>'France' in capitals</code> équivaut à <code>True</code></li>
-                <li>Set et dict sont mutables.</li>
-            </ul>
-        </section>
-        <section id="python-valeur-verite">
-            <h2>Valeur de vérité</h2>
-            <p>Sont considéré comme faux:</p>
-            <ul>
-                <li><code>None</code></li>
-                <li>zéro pour tout type numérique</li>
-                <li>Une list, tuple, set, string ou dict vide</li>
-                <li>Tout objet dont la classe définit la méthode <code>__bool__</code> ou <code>__len__</code> si elle renvoie <code>0</code> ou <code>False</code></li>
-            </ul>
-            <p>Toute autre valeur est considérée comme vraie.</p>
-        </section>
-        <section id="python-operateurs-comparateurs">
-            <h2>Opérateurs & comparateurs</h2>
-            <ul>
-                <li>Opérateurs booléens: <code>and</code>, <code>or</code> et <code>not</code></li>
-                <li>Comparateurs: <code><</code>, <code><=</code>, <code>></code>, <code>>=</code>, <code>==</code>, <code>!=</code>, <code>is</code> et <code>is not</code></li>
-            </ul>
-        </section>
-        <section id="python-syntaxe">
-            <h2>Syntaxe</h2>
-            <p>Python n'utilise pas d'accolades pour grouper des blocs d'instructions ensemble. L'indentation est sémantique.</p>
-            <div style="display: flex;">
-                <div style="flex: 1;">
-                    <small>Java</small>
-                    <pre><code data-trim>
-                        if (x <= y)
-                            x++;
-                            y--;
-                        z++;
-                    </code></pre>
-                </div>
-                <div style="flex: 1;">
-                    <small>Python</small>
-                    <pre><code data-trim>
-                        if x <= y:
-                            x++
-                            y--
-                        z++
-                    </code></pre>
-                </div>
-            </div>
-
-            <p>Cela apporte moins d'erreurs et beaucoup plus de clarté.</p>
-        </section>
-        <section id="python-structure-de-controle">
-            <h2>Structures de contrôle</h2>
-            <div style="display: flex;">
-                <div style="flex: 1;">
-                    <pre><code data-trim>
-                        if True:
-                            pass
-                        elif False:
-                            pass
-                        else:
-                            pass
-                    </code></pre>
-                </div>
-                <div style="flex: 1;">
-                    <pre><code data-trim>
-                        while i > 0:
-                            pass
-                    </code></pre>
-                </div>
-                <div style="flex: 1;">
-                    <pre><code data-trim>
-                        for i in range(10):
-                            pass
-                    </code></pre>
-                </div>
-            </div>
-        </section>
-        <section id="python-fonctions">
-            <h2>Fonctions</h2>
-            <pre><code data-trim>
-                def fib(n, a=0, b=1):
-                    """Print a Fibonacci series up to n."""
-                    while a < n:
-                        print(a, end=' ')
-                        a, b = b, a+b
-                    print()
-                fib(10)  # equiv fib(n=10)
-            </code></pre>
-            <pre><code data-trim>
-                def cheeseshop(kind, *arguments, **keywords):
-                    print("-- Do you have any", kind, "?")
-                    print("-- I'm sorry, we're all out of", kind)
-                    for arg in arguments:
-                        print(arg)
-                    print("-" * 40)
-                    for kw in keywords:
-                        print(kw, ":", keywords[kw])
-                </code>
-                <code data-trim>
-                >>> cheeseshop("Limburger", "It's very runny, sir.",
-                ...            "It's really very, VERY runny, sir.",
-                ...            shopkeeper="Michael Palin",
-                ...            client="John Cleese",
-                ...            sketch="Cheese Shop Sketch")
-                </code><code data-trim>
-                -- Do you have any Limburger ?
-                -- I'm sorry, we're all out of Limburger
-                It's very runny, sir.
-                It's really very, VERY runny, sir.
-                ----------------------------------------
-                shopkeeper : Michael Palin
-                client : John Cleese
-                sketch : Cheese Shop Sketch
-            </code></pre>
-        </section>
-        <section id="python-classes">
-            <h2>Classes</h2>
-            <pre><code data-trim>
-                class Coordinate(object):
-                    def __init__(self, x, y):
-                        self.x = x
-                        self.y = y
-                    def dist_to_origin(self):
-                        return sqrt(x ** 2 + y ** 2)
-
-                point = Coordinate(1, 2)
-                point.x = 4
-                print(point.dist_to_origin())
-            </code></pre>
-        </section>
-        <section id="python-modules-import">
-            <h2>Modules et import</h2>
-            <p>Un module est un fichier python importable depuis d'autres modules.</p>
-            <div style="display: flex;">
-                <pre style="flex: 1;"><code data-trim>
-                    import math
-                    math.sqrt(4)
-                </code></pre>
-                <pre style="flex: 1;"><code data-trim>
-                    from math import sqrt
-                    sqrt(4)
-                </code></pre>
-                <pre style="flex: 1;"><code data-trim>
-                    from math import sqrt as sq
-                    sq(4)
-                </code></pre>
-            </div>
-            <p>Un fichier <code>__init__.py</code> permet a Python de considérer son dossier parent comme un module.</p>
-            Lorsqu'un module est importé, tout son contexte global est exécuté.
-            <pre><code>if __name__ == "__main__":
-    # execute only if run as a script
-    main()</code></pre>
-        </section>
-        <section id="python-gestion-exceptions">
-            <h2>Gestion des exceptions</h2>
-            <pre><code data-trim>
-                try:
-                    raise ValueError('Oops')
-                except ValueError as e:
-                    print('An exception flew by!')
-                    raise
-            </code></pre>
-        </section>
         <section id="intro-plugin">
             <h1>Plugins dans ICTV</h1>
         </section>
-        <!--
-            systeme de templating
-            montrer une template?
-            montrer pluginSlide et Plugincapsule
-         -->
         <section id="plugin-schema">
             <h2>Execution</h2>
             <img class="stretch" src="schema.svg" style="background: rgba(255, 255, 255, 0.66);">
@@ -593,25 +304,25 @@ capitals = {'Belgium': 'Brussels', 'France': 'Paris', 'Canada': 'Ottawa'}</code>
             </code></pre>
             <pre style="flex: 1;"><code style="max-height: none;">
   text_selector:
-  name: 'Text CSS selector'
-  placeholder: 'CSS selector'
-  type: string
-  default: 'center>b'
+    name: 'Text CSS selector'
+    placeholder: 'CSS selector'
+    type: string
+    default: 'center>b'
   alternative_text:
-  name: 'Alternative text if a text cannot be found with the selector above'
-  placeholder: 'Plain text'
-  type: string
-  default: ''
+    name: 'Alternative text if a text cannot be found with the selector above'
+    placeholder: 'Plain text'
+    type: string
+    default: ''
   duration:
-  name: 'Capsule duration in seconds'
-  placeholder: 'Capsule duration in seconds'
-  type: int
-  default: 10
-  min: 1
+    name: 'Capsule duration in seconds'
+    placeholder: 'Capsule duration in seconds'
+    type: int
+    default: 10
+    min: 1
   qrcode:
-  name: 'Embed the url of the page as a QR code'
-  type: bool
-  default: no
+    name: 'Embed the url of the page as a QR code'
+    type: bool
+    default: no
             </code></pre>
             </div>
         </section>
@@ -625,7 +336,6 @@ capitals = {'Belgium': 'Brussels', 'France': 'Paris', 'Canada': 'Ottawa'}</code>
                                          'text-1': {'text': text}}
                         if qrcode:
                             self._content['image-1'] = {'qrcode': qrcode}
-                        self._has_qr_code = qrcode is not None
 
                     def get_duration(self):
                         return self._duration
