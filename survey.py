@@ -63,7 +63,7 @@ class ImgGrabberCapsule(PluginCapsule):
 class ImgGrabberSlide(PluginSlide):
     def __init__(self, question, answer1, answer2, secret):
         self._duration = 10000000
-        self._content = {'title-1': {'text': question}, 'text-1' : {'text' : ""}, 'image-1' : {'qrcode' : 'http://test.com'}, 'text-1': {'text': answer1}, 'image-2' : {'qrcode' : 'http://test2.com'}, 'text-2': {'text': answer2}}
+        self._content = {'title-1': {'text': question}, 'subtitle-1': {'text': "sondage proposé par la merveilleuse équipe #icteam"}, 'image-1' : {'qrcode' : 'http://test.com'}, 'text-1': {'text': answer1}, 'image-2' : {'qrcode' : 'http://test2.com'}, 'text-2': {'text': answer2}}
         if secret:
             pass #TODO
 
