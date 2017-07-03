@@ -63,10 +63,9 @@ class ImgGrabberCapsule(PluginCapsule):
 class ImgGrabberSlide(PluginSlide):
     def __init__(self, question, answer1, answer2, secret):
         self._duration = 10000000
-        self._content = {'background-1': {'src': , 'size': 'contain'}, 'text-1': {'text': question}}
+        self._content = {'title': {'text': question}}
         if secret:
-            self._content['image-1'] = {'qrcode': qrcode}
-        self._has_qr_code = qrcode is not None
+            pass #TODO
 
     def get_duration(self):
         return self._duration
@@ -75,7 +74,7 @@ class ImgGrabberSlide(PluginSlide):
         return self._content
 
     def get_template(self) -> str:
-        return 'template-background-text-qr'
+        return 'template-text-center'
 
     def __repr__(self):
         return str(self.__dict__)
