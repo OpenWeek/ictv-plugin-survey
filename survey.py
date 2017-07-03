@@ -63,7 +63,7 @@ class ImgGrabberCapsule(PluginCapsule):
 class ImgGrabberSlide(PluginSlide):
     def __init__(self, question, answer1, answer2, secret):
         self._duration = 10000000
-        self._content = {'title-1': {'text': question}, 'subtitle-1' : {'text' : ""}, 'text-1' : {'text' : ""}}
+        self._content = {'title-1': {'text': question}, 'text-1' : {'text' : ""}, 'image-1' : {'qrcode' : 'http://test.com'}, 'text-1': {'text': answer1}, 'image-2' : {'qrcode' : 'http://test2.com'}, 'text-2': {'text': answer2}}
         if secret:
             pass #TODO
 
@@ -74,7 +74,7 @@ class ImgGrabberSlide(PluginSlide):
         return self._content
 
     def get_template(self) -> str:
-        return 'template-text-center'
+        return 'template-survey'
 
     def __repr__(self):
         return str(self.__dict__)
