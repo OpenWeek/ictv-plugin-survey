@@ -63,7 +63,7 @@ class ImgGrabberCapsule(PluginCapsule):
 class ImgGrabberSlide(PluginSlide):
     def __init__(self, question, answer1, answer2, secret):
         self._duration = 10000000
-        self._content = {'title': {'text': question}}
+        self._content = {'title-1': {'text': question}, 'subtitle-1' : {'text' : ""}, 'text-1' : {'text' : ""}}
         if secret:
             pass #TODO
 
