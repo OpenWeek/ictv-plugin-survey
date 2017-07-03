@@ -37,9 +37,9 @@
             <h2>Qu'est ce que ICTV ?</h2>
             <ul>
                 <li>ICTV est un <a href="https://fr.wikipedia.org/wiki/Syst%C3%A8me_de_gestion_de_contenu" target="_blank">système de gestion de contenu</a> pour l'<a href="https://fr.wikipedia.org/wiki/Affichage_dynamique" target="_blank">affichage dynamique</a>.</li>
-                <li>ICTV vous permet de créer et modifier du contenu qui sera affiché sur un réseau d'écrans.</li>
-                <li>L'interface d'ICTV est entièrement basée sur le web. Tout depuis la gestion du contenu jusqu'à sa reproduction sur les écrans est effectué dans un navigateur.</li>
-                <li>ICTV est facilement extensible grâce à un système de plugins simple et puissant.</li>
+                <li class="fragment">ICTV vous permet de créer et modifier du contenu qui sera affiché sur un réseau d'écrans.</li>
+                <li class="fragment">L'interface d'ICTV est entièrement basée sur le web. Tout depuis la gestion du contenu jusqu'à sa reproduction sur les écrans est effectué dans un navigateur.</li>
+                <li class="fragment">ICTV est facilement extensible grâce à un système de plugins simple et puissant.</li>
             </ul>
         </section>
         <section id="version">
@@ -48,8 +48,8 @@
                 <li>Affichage limité à des images statiques</li>
                 <li>Pas de vidéos ou d'images animées</li>
                 <li>Diaporama inerte, aucune transition dynamique possible</li>
-                <li>Interface trop austère</li>
-                <li>Opportunité de remise à plat de la conception du logiciel</li>
+                <li class="fragment">Interface trop austère</li>
+                <li class="fragment">Opportunité de remise à plat de la conception du logiciel</li>
             </ul>
         </section>
         <section id="concepts">
@@ -64,10 +64,10 @@
             <h2>Plugins</h2>
             <p>Tout contenu provient d'un plugin.</p>
             <ul>
-                <li>Un plugin peut être un programme automatisé.</li>
-                <li>E.g. un programme qui crée du contenu à partir d'un flux RSS.</li>
-                <li>Interaction plus large avec les utilisateurs possible à travers l'intégration d'une sous-application web propre au plugin dans ICTV.</li>
-                <li>La configuration des plugins se fait via l'interface web d'ICTV.</li>
+                <li class="fragment">Un plugin peut être un programme automatisé.</li>
+                <li class="fragment">E.g. un programme qui crée du contenu à partir d'un flux RSS.</li>
+                <li class="fragment">Interaction plus large avec les utilisateurs possible à travers l'intégration d'une sous-application web propre au plugin dans ICTV.</li>
+                <li class="fragment">La configuration des plugins se fait via l'interface web d'ICTV.</li>
             </ul>
         </section>
         <section id="plugins-2">
@@ -86,8 +86,8 @@
             <ul>
                 <li>Elles permettent d'organiser le contenu.</li>
                 <li>Chaque channel contient un type d'information thématique.</li>
-                <li>Chaque channel est une instance, une paramétrisation, d'un plugin.</li>
-                <li>Les channels peuvent être publiques ou restreintes à certains utilisateurs.</li>
+                <li class="fragment">Chaque channel est une instance, une paramétrisation, d'un plugin.</li>
+                <li class="fragment">Les channels peuvent être publiques ou restreintes à certains utilisateurs.</li>
             </ul>
         </section>
         <section id="screens">
@@ -95,8 +95,8 @@
             <ul>
                 <li>Une sortie affichant du contenu</li>
                 <li>Peut être physique, i.e. un écran, ou virtuel, i.e. une page web.</li>
-                <li>Les écrans diffusent le contenu des channels auxquelles ils sont abonnés.</li>
-                <li>Les abonnements d'un écran vont déterminer le contenu qui y sera affiché.</li>
+                <li class="fragment">Les écrans diffusent le contenu des channels auxquelles ils sont abonnés.</li>
+                <li class="fragment">Les abonnements d'un écran vont déterminer le contenu qui y sera affiché.</li>
             </ul>
         </section>
         <section id="contenu">
@@ -117,7 +117,7 @@
                         <li><a href="https://adminlte.io/preview" target="_blank">AdminLTE</a> pour l'interface utilisateur, basé sur JQuery et Bootstrap.</li>
                     </ul>
                 </li>
-                <li>
+                <li class="fragment">
                     Coté serveur
                     <ul>
                         <li><a href="https://www.python.org/" target="_blank">Python 3.5+</a></li>
@@ -128,9 +128,9 @@
         </section>
         <section id="intermede">
             <h1>Intermède</h1>
-            <h3>Votre mission</h3>
-            <p>Imaginer un nouveau plugin utile pour ICTV, pas nécessairement lié à l'INGI.</p>
-            <p>Plus il peut être utilisé dans de nombreuses situations, plus son intérêt est grand.</p>
+            <h3 class="fragment">Votre mission</h3>
+            <p class="fragment">Imaginer un nouveau plugin utile pour ICTV, pas nécessairement lié à l'INGI.</p>
+            <p class="fragment">Plus il peut être utilisé dans de nombreuses situations, plus son intérêt est grand.</p>
         </section>
         <section id="idees">
             <h2>Un peu d'inspiration</h2>
@@ -243,7 +243,7 @@
                         </div>
                     </section>
                 </code></pre>
-                <pre style="flex: 1;"><code data-trim style="max-height: none;">
+                <pre class="fragment" style="flex: 1;"><code data-trim style="max-height: none;">
                     {
                         'title-1': {'text': "Awesome title"},
                         'subtitle-1': {'text': "Subtile subtitle"},
@@ -302,7 +302,7 @@
                     type: string
                     default: 'src'
             </code></pre>
-            <pre style="flex: 1;"><code style="max-height: none;">
+            <pre class="fragment" style="flex: 1;"><code style="max-height: none;">
   text_selector:
     name: 'Text CSS selector'
     placeholder: 'CSS selector'
@@ -401,7 +401,7 @@
         </section>
         <section id="the-end">
             <h1>Et voila</h1>
-            <h3>Pef</h3>
+            <h3 class="fragment">Pef</h3>
         </section>
     </div>
 </div>
