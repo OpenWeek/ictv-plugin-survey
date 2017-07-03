@@ -1,0 +1,28 @@
+plugin:
+  webapp: no
+  static: no
+  description: |
+    Work in progress !
+  dependencies:
+    - pyquery
+channels_params:
+  question:
+    name: 'Survey question'
+    placeholder: 'Question'
+    type: string
+    default: "Aimez-vous la pluie ?"
+  answer1:
+    name: 'First possible answer'
+    placeholder: 'Answer'
+    type: string
+    default: "Oui !"
+  answer2:
+    name: 'Second possible answer'
+    placeholder: 'Answer'
+    type: string
+    default: "Non !"
+  #Idée : laisser la possibilité d'entrer 4 réponses et si vide pas afficher
+  secret:
+    name: 'Survey results are secret'
+    type: bool
+    default: no
