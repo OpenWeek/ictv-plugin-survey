@@ -87,12 +87,12 @@ def get_content(channel_id):
     json.dump(data, towrite, indent=4)
     towrite.close()
 
-    return [SurveyCapsule(question, author, answers, secret, channel_id)]
+    return [SurveyCapsule(question, author, answers, secret, channel_id, current["id"])]
 
 
 class SurveyCapsule(PluginCapsule):
-    def __init__(self, question, author, answers, secret, channel_id):
-        self._slides = [SurveySlide(question, author, answers, secret, channel_id)]
+    def __init__(self, question, author, answers, secret, channel_id, question_id):
+        self._slides = [SurveySlide(question, author, answers, secret, channel_id, question_id)]
 
     def get_slides(self):
         return self._slides
@@ -104,7 +104,7 @@ class SurveyCapsule(PluginCapsule):
         return str(self.__dict__)
 
 class SurveySlide(PluginSlide):
-    def __init__(self, question, author, answers, secret, channel_id):
+    def __init__(self, question, author, answers, secret, channel_id, question_id):
         self._duration = 10000000
         self._nb_answers = len(answers)
         if self._nb_answers >= 6:
@@ -113,7 +113,7 @@ class SurveySlide(PluginSlide):
         i = 1
         for answer in answers:
             self._content['text-'+str(i)] = {'text': answer}
-            self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+str(i)}
+            self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+'/'+str(question_id)+'/'+str(i)}
             i += 1
 
         if secret:
