@@ -1,0 +1,28 @@
+{
+    "questions": [
+        {
+            "1": 0,
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "id": 1
+        },
+        {
+            "1": 0,
+            "question": "Aimez-vous le soleil ?",
+            "2": 0,
+            "id": 2
+        },
+        {
+            "1": 0,
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "id": 3
+        },
+        {
+            "1": 0,
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "id": 4
+        }
+    ]
+}

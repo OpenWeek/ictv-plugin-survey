@@ -33,8 +33,8 @@ def get_app(ictv_app):
     """ Returns the web.py application of the editor. """
 
     urls = (
-        'index', 'IndexPage',
-        'result', 'ictv.plugins.survey.app.ResultPage'
+        'index', 'ictv.plugins.survey.app.IndexPage',
+        'result/(.+)', 'ictv.plugins.survey.app.Result'
     )
 
     app = web.application(urls, globals())
@@ -49,19 +49,21 @@ class SurveyPage(ICTVPage):
     plugin_app = None
 
     @property
-    def editor_app(self):
+    def survey_app(self):
         """ Returns the web.py application singleton of the editor. """
         return SurveyPage.plugin_app
 
     @property
     def renderer(self):
         """ Returns the webapp renderer. """
-        return self.editor_app.renderer
+        return self.survey_app.renderer
 
 
-class ResultPage(SurveyPage):
-    def GET(self):
-        return "Test"
+class Result(SurveyPage):
+    def GET(self, arg):
+        data = open('./plugins/survey/survey_questions.json', 'w')
+
+        return "Vous avez choisi la réponse "+str(arg)+" !" #TODO : ajouter bouton changer ma réponse + voir les résultats
 
 
 class IndexPage(SurveyPage):
