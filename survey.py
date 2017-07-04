@@ -45,21 +45,12 @@ def get_content(channel_id):
     if not question or not answers:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
-<<<<<<< HEAD
     return [SurveyCapsule(question, author, answers, secret)]
 
 
 class SurveyCapsule(PluginCapsule):
     def __init__(self, question, author, answers, secret):
-        self._slides = [SurveySlide(question, author, answers, secret)]
-=======
-    return [ImgGrabberCapsule(question, answer1, answer2, secret, channel_id)]
-
-
-class ImgGrabberCapsule(PluginCapsule):
-    def __init__(self, question, answer1, answer2, secret, channel_id):
-        self._slides = [ImgGrabberSlide(question, answer1, answer2, secret, channel_id)]
->>>>>>> a6efd25e6c8def1e6224d6ce19a044801dfb689e
+        self._slides = [SurveySlide(question, author, answers, secret, channel_id)]
 
     def get_slides(self):
         return self._slides
@@ -105,7 +96,7 @@ class SurveySlide(PluginSlide):
         i = 1
         for answer in answers:
             self._content['text-'+str(i)] = {'text': answer}
-            self._content['image-'+str(i)] = {'qrcode': 'web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+str(i)}
+            self._content['image-'+str(i)] = {'qrcode': 'web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+str(i)'}
             i += 1
 
         if secret:
