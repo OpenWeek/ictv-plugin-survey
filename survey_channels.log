@@ -1,0 +1,14 @@
+WARNING : 2017-07-04 12:09:42,533 [Channel Test (3)] - One slide had 1 non complying field(s). It' content was the following:
+WARNING : 2017-07-04 12:09:42,534 [Channel Test (3)] - Id title-1 from template template-survey-1-answer has a length of 59 but only 25 characters are permitted. It's text was "Aimez-vous la pluie ?(rtyuiouiytuyuiiouiyhjikojkjgjjiokjkhj"
+WARNING : 2017-07-04 12:11:05,119 [Channel Test (3)] - One slide had 1 non complying field(s). It' content was the following:
+WARNING : 2017-07-04 12:11:05,120 [Channel Test (3)] - Id title-1 from template template-survey-1-answer has a length of 35 but only 25 characters are permitted. It's text was "Aimez-vous la pluie ? gzerhighzeirg"
+WARNING : 2017-07-04 12:11:27,571 [Channel Test (3)] - One slide had 1 non complying field(s). It' content was the following:
+WARNING : 2017-07-04 12:11:27,571 [Channel Test (3)] - Id title-1 from template template-survey-1-answer has a length of 26 but only 25 characters are permitted. It's text was "Aimez-vous la pluie ? gzer"
+WARNING : 2017-07-04 12:11:42,184 [Channel Test (3)] - One slide had 1 non complying field(s). It' content was the following:
+WARNING : 2017-07-04 12:11:42,184 [Channel Test (3)] - Id title-1 from template template-survey-1-answer has a length of 28 but only 25 characters are permitted. It's text was "Aimez-vous la pluie ughzarog"
+WARNING : 2017-07-04 12:12:56,050 [Channel Test (3)] - One slide had 1 non complying field(s). It' content was the following:
+WARNING : 2017-07-04 12:12:56,050 [Channel Test (3)] - Id title-1 from template template-survey-1-answer has a length of 30 but only 25 characters are permitted. It's text was "aazertyuiopghj ertyuiopertyuio"
+WARNING : 2017-07-04 12:15:43,470 [Channel Test (3)] - One slide had 1 non complying field(s). It' content was the following:
+WARNING : 2017-07-04 12:15:43,470 [Channel Test (3)] - Id title-1 from template template-survey-1-answer has a length of 30 but only 2 characters are permitted. It's text was "aazertyuiopghj ertyuiopertyuio"
+WARNING : 2017-07-04 12:17:49,125 [Channel Test (3)] - One slide had 1 non complying field(s). It' content was the following:
+WARNING : 2017-07-04 12:17:49,125 [Channel Test (3)] - Id title-1 from template template-survey-1-answer has a length of 30 but only 2 characters are permitted. It's text was "aazertyuiopghj ertyuiopertyuio"

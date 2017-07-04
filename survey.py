@@ -37,18 +37,18 @@ def get_content(channel_id):
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
     logger = get_logger('survey', channel)
     question = channel.get_config_param('question')
-    answer1 = channel.get_config_param('answer1')
-    answer2 = channel.get_config_param('answer2')
+    author = channel.get_config_param('author')
+    answers = channel.get_config_param('answers')
     secret = channel.get_config_param('secret')
-    if not question or not answer1 or not answer2:
+    if not question or not answers:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
-    return [ImgGrabberCapsule(question, answer1, answer2, secret)]
+    return [SurveyCapsule(question, author, answers, secret)]
 
 
-class ImgGrabberCapsule(PluginCapsule):
-    def __init__(self, question, answer1, answer2, secret):
-        self._slides = [ImgGrabberSlide(question, answer1, answer2, secret)]
+class SurveyCapsule(PluginCapsule):
+    def __init__(self, question, author, answers, secret):
+        self._slides = [SurveySlide(question, author, answers, secret)]
 
     def get_slides(self):
         return self._slides
@@ -60,10 +60,20 @@ class ImgGrabberCapsule(PluginCapsule):
         return str(self.__dict__)
 
 
-class ImgGrabberSlide(PluginSlide):
-    def __init__(self, question, answer1, answer2, secret):
+class SurveySlide(PluginSlide):
+    def __init__(self, question, author, answers, secret):
         self._duration = 10000000
-        self._content = {'title-1': {'text': question}, 'subtitle-1': {'text': "sondage proposé par la merveilleuse équipe #icteam"}, 'image-1' : {'qrcode' : 'http://test.com'}, 'text-1': {'text': answer1}, 'image-2' : {'qrcode' : 'http://test2.com'}, 'text-2': {'text': answer2}}
+        self._nb_answers = len(answers)
+        if self._nb_answers >= 6:
+            self._nb_answers = 5
+
+        self._content = {'title-1': {'text': question}, 'text-0': {'text': author}}
+        i = 1
+        for answer in answers:
+            self._content['text-'+str(i)] = {'text': answer}
+            self._content['image-'+str(i)] = {'qrcode': 'http://test'+str(i)+'.com'}
+            i += 1
+
         if secret:
             pass #TODO
 
@@ -74,7 +84,9 @@ class ImgGrabberSlide(PluginSlide):
         return self._content
 
     def get_template(self) -> str:
-        return 'template-survey'
+        if self._nb_answers == 1:
+            return 'template-survey-1-answer'
+        return 'template-survey-'+str(self._nb_answers)+'-answers'
 
     def __repr__(self):
         return str(self.__dict__)

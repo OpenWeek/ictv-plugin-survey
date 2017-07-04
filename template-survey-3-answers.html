@@ -1,0 +1,51 @@
+$def with (slide)
+$var name: Survey
+$var description: Question + answers (with qr code)
+
+<style>
+   #question {
+      margin-bottom: 6%;
+   }
+   .answers {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: space-around;
+   }
+   .answer {
+      margin: 6%;
+   }
+   .text-answer {
+      text-align: center;
+   }
+</style>
+
+<div class="logo logo-ucl">
+   $:logo(content=slide, number=1, editor_type="image", editor_placeholder="Choisir le logo", editor_label="Logo", editor_order="5")
+</div>
+<div class="logo logo-fac">
+   $:logo(content=slide, number=2, editor_type="image", editor_placeholder="Choisir le logo", editor_label="Logo", editor_order="5")
+</div>
+<div class="content">
+   <div id="question">
+      $:title(content=slide, number=1, max_chars=160, editor_type="text", editor_placeholder="Question", editor_label="Question", editor_default="Question", editor_order="1")
+      <strong>
+         $:text(content=slide, number=0, max_chars=130, editor_type="text", editor_placeholder="Auteur", editor_label="Auteur", editor_default="Auteur", editor_order="2", style="text-align: right; padding-right: 12%")
+      </strong>
+   </div>
+
+    <div class="answers">
+      $ i = 1
+      $while i <= 3:
+         <div class="answer" style="order: $i">
+            <div class="qr">
+               $:img(content=slide, style="max-width: 200px; margin: 1%", number=i, editor_type="image", editor_placeholder="Choisir l'image", editor_label="Fichier image", editor_default="michelfra.gif", editor_order="1")
+            </div>
+            <div class="text-answer">
+               $:text(content=slide, style="max-width: 200px", number=i, max_chars=640, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
+            </div>
+         </div>
+         $ i += 1
+   </div>
+</div>

@@ -10,17 +10,18 @@ channels_params:
     name: 'Survey question'
     placeholder: 'Question'
     type: string
-    default: "Aimez-vous la pluie ?"
-  answer1:
-    name: 'First possible answer'
-    placeholder: 'Answer'
-    type: string
-    default: "Oui !"
-  answer2:
-    name: 'Second possible answer'
-    placeholder: 'Answer'
-    type: string
-    default: "Non !"
+    default: 'Aimez-vous la pluie ?'
+  author:
+     name: 'Signature'
+     placeholder: 'Signature'
+     type: string
+     default: 'Signé : ICTEAM'
+  answers:
+     name: 'Answers'
+     placeholder: 'Answer'
+     type: list[string]
+     default: ['Oui', 'Non']
+     add: 'Add answer (5 max.)'
   #Idée : laisser la possibilité d'entrer 4 réponses et si vide pas afficher
   secret:
     name: 'Survey results are secret'
