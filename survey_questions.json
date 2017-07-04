@@ -1,148 +1,48 @@
 {
     "questions": [
         {
+            "answers": [
+                {
+                    "1": {
+                        "answer": "Oui",
+                        "votes": 0
+                    }
+                },
+                {
+                    "2": {
+                        "answer": "Non",
+                        "votes": 0
+                    }
+                },
+                {
+                    "3": {
+                        "answer": "Peut-\u00eatre",
+                        "votes": 0
+                    }
+                }
+            ],
+            "channel": 4,
             "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
             "id": 1
         },
         {
+            "id": 2,
+            "channel": 5,
             "question": "Aimez-vous le soleil ?",
-            "2": 0,
-            "1": 0,
-            "id": 2
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 3
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 4
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 5
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 6
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 7
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 8
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 9
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 10
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 11
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 12
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 13
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 14
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 15
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 16
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 17
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 18
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 19
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 20
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 21
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 22
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 23
-        },
-        {
-            "question": "Aimez-vous la pluie ?",
-            "2": 0,
-            "1": 0,
-            "id": 24
+            "answers": [
+                {
+                    "1": {
+                        "answer": "Oui",
+                        "votes": 0
+                    }
+                },
+                {
+                    "2": {
+                        "answer": "Non",
+                        "votes": 0
+                    }
+                }
+            ]
         }
     ]
 }

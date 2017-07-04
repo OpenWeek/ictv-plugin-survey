@@ -42,9 +42,51 @@ def get_content(channel_id):
     author = channel.get_config_param('author')
     answers = channel.get_config_param('answers')
     secret = channel.get_config_param('secret')
+
     if not question or not answers:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
+
+    current = {
+        "id": 1,
+        "channel" : channel_id,
+        "question": question,
+        "answers" : []
+    }
+    i = 1
+    for e in answers:
+        curr = {
+            i:{
+                "answer": e,
+                "votes": 0
+            }
+        }
+        i += 1
+        current["answers"].append(curr)
+    try:
+        data_file = open('./plugins/survey/survey_questions.json', 'r')
+        data = json.load(data_file)
+        data_file.close()
+    except IOError:
+        data = {
+            "questions": [current]
+        }
+    else:
+        found = False
+        for e in data["questions"]:
+            if e["channel"] == channel_id:
+                found = True
+        if not found :
+            next_id = data["questions"][-1]["id"]
+            current["id"] = next_id + 1
+            data["questions"].append(current)
+
+    towrite = open('./plugins/survey/survey_questions.json', 'w')
+    # TODO : make flexible
+
+    json.dump(data, towrite, indent=4)
+    towrite.close()
+
     return [SurveyCapsule(question, author, answers, secret, channel_id)]
 
 
@@ -63,31 +105,6 @@ class SurveyCapsule(PluginCapsule):
 
 class SurveySlide(PluginSlide):
     def __init__(self, question, author, answers, secret, channel_id):
-        current = {
-            "id":1,
-            "question": question,
-            "1": 0,
-            "2": 0
-        }
-        test = True
-        try:
-            data_file = open('./plugins/survey/survey_questions.json', 'r')
-            data = json.load(data_file)
-        except IOError:
-            data = {
-                "questions": [current]
-            }
-        else:
-            nextID = data["questions"][-1]["id"]
-            current["id"] = nextID+1
-            data["questions"].append(current)
-
-        towrite = open('./plugins/survey/survey_questions.json', 'w')
-        #TODO : make flexible
-
-        json.dump(data, towrite, indent=4)
-        towrite.close()
-
         self._duration = 10000000
         self._nb_answers = len(answers)
         if self._nb_answers >= 6:
