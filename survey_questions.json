@@ -67,9 +67,9 @@
             "id": 11
         },
         {
-            "1": 0,
-            "2": 0,
             "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
             "id": 12
         },
         {
@@ -79,9 +79,9 @@
             "id": 13
         },
         {
-            "1": 0,
-            "2": 0,
             "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
             "id": 14
         },
         {
@@ -91,10 +91,58 @@
             "id": 15
         },
         {
-            "1": 0,
-            "2": 0,
             "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
             "id": 16
+        },
+        {
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
+            "id": 17
+        },
+        {
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
+            "id": 18
+        },
+        {
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
+            "id": 19
+        },
+        {
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
+            "id": 20
+        },
+        {
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
+            "id": 21
+        },
+        {
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
+            "id": 22
+        },
+        {
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
+            "id": 23
+        },
+        {
+            "question": "Aimez-vous la pluie ?",
+            "2": 0,
+            "1": 0,
+            "id": 24
         }
     ]
 }
