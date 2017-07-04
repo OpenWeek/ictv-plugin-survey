@@ -61,6 +61,8 @@ class SurveyPage(ICTVPage):
 
 class Result(SurveyPage):
     def GET(self, arg):
+        data = open('./plugins/survey/survey_questions.json', 'w')
+
         return "Vous avez choisi la réponse "+str(arg)+" !" #TODO : ajouter bouton changer ma réponse + voir les résultats
 
 

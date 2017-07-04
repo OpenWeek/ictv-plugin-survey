@@ -30,6 +30,8 @@ from ictv.plugin_manager.plugin_capsule import PluginCapsule
 from ictv.plugin_manager.plugin_manager import get_logger
 from ictv.plugin_manager.plugin_slide import PluginSlide
 from ictv.plugin_manager.plugin_utils import MisconfiguredParameters
+import json
+from pprint import pprint
 
 
 def get_content(channel_id):
@@ -62,8 +64,32 @@ class ImgGrabberCapsule(PluginCapsule):
 
 class ImgGrabberSlide(PluginSlide):
     def __init__(self, question, answer1, answer2, secret):
+        current = {
+            "id":1,
+            "question": question,
+            "1": 0,
+            "2": 0
+        }
+        test = True
+        try:
+            data_file = open('./plugins/survey/survey_questions.json', 'r')
+            data = json.load(data_file)
+        except IOError:
+            data = {
+                "questions": [current]
+            }
+        else:
+            nextID = data["questions"][-1]["id"]
+            current["id"] = nextID+1
+            data["questions"].append(current)
+
+        towrite = open('./plugins/survey/survey_questions.json', 'w')
+        #TODO : make flexible
+
+        json.dump(data, towrite, indent=4)
+        towrite.close()
         self._duration = 10000000
-        self._content = {'title-1': {'text': question}, 'subtitle-1': {'text': "sondage proposé par la merveilleuse équipe #icteam"}, 'image-1' : {'qrcode' : 'http://test.com'}, 'text-1': {'text': answer1}, 'image-2' : {'qrcode' : 'http://test2.com'}, 'text-2': {'text': answer2}}
+        self._content = {'title-1': {'text': question}, 'subtitle-1': {'text': "sondage proposé par la merveilleuse équipe #icteam"}, 'image-1' : {'qrcode' : 'http://0.0.0.0:8080/channels/4/result/1'}, 'text-1': {'text': answer1}, 'image-2' : {'qrcode' : 'http://0.0.0.0:8080/channels/4/result/2'}, 'text-2': {'text': answer2}}
         if secret:
             pass #TODO
 
