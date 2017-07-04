@@ -26,6 +26,7 @@ import json
 import os
 from collections import OrderedDict
 import web
+import json
 from ictv.pages.utils import ICTVPage
 
 
@@ -34,8 +35,9 @@ def get_app(ictv_app):
 
     urls = (
         'index', 'ictv.plugins.survey.app.IndexPage',
-        'result/(.+)', 'ictv.plugins.survey.app.Result',
+        'result/(.+)/(.+)', 'ictv.plugins.survey.app.Result',
         'stat/(.+)', 'ictv.plugins.survey.app.Stat'
+
     )
 
     app = web.application(urls, globals())
@@ -61,9 +63,9 @@ class SurveyPage(ICTVPage):
 
 
 class Result(SurveyPage):
-    def GET(self, arg):
-        data = open('./plugins/survey/survey_questions.json', 'w')
-
+    def GET(self, question, answer):
+        data_file = open('./plugins/survey/survey_questions.json', 'w')
+        data = json.load(data_file)
         return "Vous avez choisi la réponse "+str(arg)+" !" #TODO : ajouter bouton changer ma réponse + voir les résultats
 
 
