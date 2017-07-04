@@ -67,19 +67,19 @@ def get_content(channel_id):
         data_file = open('./plugins/survey/survey_questions.json', 'r')
         data = json.load(data_file)
         data_file.close()
-    except IOError:
+    except:
         data = {
             "questions": [current]
         }
     else:
         found = False
         for e in data["questions"]:
-            if e["channel"] == channel_id:
-                found = True
+           if e["channel"] == channel_id:
+               found = True
         if not found :
-            next_id = data["questions"][-1]["id"]
-            current["id"] = next_id + 1
-            data["questions"].append(current)
+           next_id = data["questions"][-1]["id"]
+           current["id"] = next_id + 1
+           data["questions"].append(current)
 
     towrite = open('./plugins/survey/survey_questions.json', 'w')
     # TODO : make flexible
@@ -113,7 +113,7 @@ class SurveySlide(PluginSlide):
         i = 1
         for answer in answers:
             self._content['text-'+str(i)] = {'text': answer}
-            self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+'/'+str(question_id)+'/'+str(i)}
+            self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channels/'+str(channel_id)+'/result/'+'/'+str(question_id)+'/'+str(i)}
             i += 1
 
         if secret:

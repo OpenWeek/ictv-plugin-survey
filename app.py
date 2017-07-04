@@ -27,6 +27,7 @@ import os
 from collections import OrderedDict
 import web
 import json
+import traceback
 from ictv.pages.utils import ICTVPage
 
 
@@ -62,9 +63,23 @@ class SurveyPage(ICTVPage):
 
 class Result(SurveyPage):
     def GET(self, question, answer):
-        data_file = open('./plugins/survey/survey_questions.json', 'w')
-        data = json.load(data_file)
-        return "Vous avez choisi la réponse "+str(arg)+" !" #TODO : ajouter bouton changer ma réponse + voir les résultats
+        try:
+            data_file = open('./plugins/survey/survey_questions.json', 'r')
+            data = json.load(data_file)
+            to_write = open('./plugins/survey/survey_questions.json', 'w')
+        except IOError:
+            print("IOError ! ")
+            traceback.print_exc()
+        else:
+            for e in data["questions"]:
+                if e["id"] == question:
+                    e["answers"][str(answer)] += 1
+            print(data)
+            json.dump(data, to_write, indent=4)
+            data_file.close()
+            to_write.close()
+
+        return "Vous avez choisi la réponse "+str(answer)+" !" #TODO : ajouter bouton changer ma réponse + voir les résultats
 
 
 class IndexPage(SurveyPage):
