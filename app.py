@@ -83,7 +83,8 @@ class Stat(SurveyPage):
         else:
             for q in data["questions"]:
                 if str(q["id"]) == id:
-                    return "Resutat : "+ str(q["1"]["vote"])
+                    print(q["answers"][0])
+                    return "Resultat : "+ str(q["answers"][0]["votes"])
 
             return "Not found"
 

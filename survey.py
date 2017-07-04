@@ -53,15 +53,15 @@ def get_content(channel_id):
         "question": question,
         "answers" : []
     }
-    i = 1
+
     for e in answers:
         curr = {
-            i:{
-                "answer": e,
-                "votes": 0
-            }
+
+            "answer": e,
+            "votes": 0
+
         }
-        i += 1
+
         current["answers"].append(curr)
     try:
         data_file = open('./plugins/survey/survey_questions.json', 'r')
