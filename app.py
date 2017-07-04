@@ -34,7 +34,8 @@ def get_app(ictv_app):
 
     urls = (
         'index', 'ictv.plugins.survey.app.IndexPage',
-        'result/(.+)', 'ictv.plugins.survey.app.Result'
+        'result/(.+)', 'ictv.plugins.survey.app.Result',
+        'stat', 'ictv.plugins.survey.app.Stat'
     )
 
     app = web.application(urls, globals())
@@ -69,3 +70,6 @@ class Result(SurveyPage):
 class IndexPage(SurveyPage):
     def GET(self):
         return "Hello World !"
+
+class Stat(SurveyPage):
+    def GET(self):
