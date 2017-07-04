@@ -79,6 +79,7 @@ fabric.properties
 .idea/sonarlint
 
 ### Python ###
+*.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
