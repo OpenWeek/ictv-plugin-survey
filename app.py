@@ -36,7 +36,9 @@ def get_app(ictv_app):
 
     urls = (
         'index', 'ictv.plugins.survey.app.IndexPage',
-        'result/(.+)/(.+)', 'ictv.plugins.survey.app.Result'
+        'result/(.+)/(.+)', 'ictv.plugins.survey.app.Result',
+        'stat/(.+)', 'ictv.plugins.survey.app.Stat'
+
     )
 
     app = web.application(urls, globals())
@@ -85,3 +87,19 @@ class Result(SurveyPage):
 class IndexPage(SurveyPage):
     def GET(self):
         return "Hello World !"
+
+class Stat(SurveyPage):
+    def GET(self, id):
+        try:
+            data_file = open('./plugins/survey/survey_questions.json', 'r')
+            data = json.load(data_file)
+        except IOError:
+            pass # retourner une page bateau
+        else:
+            for q in data["questions"]:
+                if str(q["id"]) == id:
+                    print(q["answers"][0])
+                    return "Resultat : "+ str(q["answers"][0]["votes"])
+
+            return "Not found"
+
