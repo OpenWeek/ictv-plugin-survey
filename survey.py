@@ -50,7 +50,7 @@ def get_content(channel_id):
 
 class SurveyCapsule(PluginCapsule):
     def __init__(self, question, author, answers, secret):
-        self._slides = [SurveySlide(question, author, answers, secret, channel_id)]
+        self._slides = [SurveySlide(question, author, answers, secret)]
 
     def get_slides(self):
         return self._slides
@@ -96,7 +96,7 @@ class SurveySlide(PluginSlide):
         i = 1
         for answer in answers:
             self._content['text-'+str(i)] = {'text': answer}
-            self._content['image-'+str(i)] = {'qrcode': 'web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+str(i)'}
+            self._content['image-'+str(i)] = {'qrcode': 'http://0.0.0.0:8080/channels/4/result/'+str(i)}
             i += 1
 
         if secret:
