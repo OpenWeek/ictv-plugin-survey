@@ -34,7 +34,7 @@ def get_app(ictv_app):
 
     urls = (
         'index', 'IndexPage',
-        'result', 'ResultPage'
+        'result', 'ictv.plugins.survey.app.ResultPage'
     )
 
     app = web.application(urls, globals())

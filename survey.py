@@ -20,7 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
+import web
 from urllib.parse import urlparse
 
 from pyquery import PyQuery
@@ -43,12 +43,12 @@ def get_content(channel_id):
     if not question or not answer1 or not answer2:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
-    return [ImgGrabberCapsule(question, answer1, answer2, secret)]
+    return [ImgGrabberCapsule(question, answer1, answer2, secret, channel_id)]
 
 
 class ImgGrabberCapsule(PluginCapsule):
-    def __init__(self, question, answer1, answer2, secret):
-        self._slides = [ImgGrabberSlide(question, answer1, answer2, secret)]
+    def __init__(self, question, answer1, answer2, secret, channel_id):
+        self._slides = [ImgGrabberSlide(question, answer1, answer2, secret, channel_id)]
 
     def get_slides(self):
         return self._slides
@@ -61,9 +61,9 @@ class ImgGrabberCapsule(PluginCapsule):
 
 
 class ImgGrabberSlide(PluginSlide):
-    def __init__(self, question, answer1, answer2, secret):
+    def __init__(self, question, answer1, answer2, secret, channel_id):
         self._duration = 10000000
-        self._content = {'title-1': {'text': question}, 'subtitle-1': {'text': "sondage proposé par la merveilleuse équipe #icteam"}, 'image-1' : {'qrcode' : 'http://test.com'}, 'text-1': {'text': answer1}, 'image-2' : {'qrcode' : 'http://test2.com'}, 'text-2': {'text': answer2}}
+        self._content = {'title-1': {'text': question}, 'subtitle-1': {'text': "sondage proposé par la merveilleuse équipe #icteam"}, 'image-1' : {'qrcode' : web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+str(1)}, 'text-1': {'text': answer1}, 'image-2' : {'qrcode' : web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+str(2)}, 'text-2': {'text': answer2}}
         if secret:
             pass #TODO
 
