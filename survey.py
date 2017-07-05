@@ -51,6 +51,7 @@ def get_content(channel_id):
         "id": 1,
         "channel" : channel_id,
         "question": question,
+        "totalVotes":0,
         "answers" : []
     }
 

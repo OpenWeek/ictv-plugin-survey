@@ -76,6 +76,7 @@ class Result(SurveyPage):
         else:
             for e in data["questions"]:
                 if str(e["id"]) == str(question):
+                    e["totalVotes"] += 1
                     i = 1
                     for el in e["answers"]:
                         if str(i) == answer:
