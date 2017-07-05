@@ -33,6 +33,7 @@ $var description: Question + answers (with qr code)
       float: left;
       color: #fff;
       padding: 0.5em;
+      white-space: nowrap;
       text-overflow: ellipsis;
    }
    .bar-1 {
@@ -87,11 +88,12 @@ $var description: Question + answers (with qr code)
          $pass
       $else:
          <!-- Show the poll results -->
+
          <div class="stacked-bar-graph">
-            <span style="width:40%" class="bar-1">$:text(content=slide, style="max-width: 200px;", number=1, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
-            <span style="width:20%" class="bar-2">$:text(content=slide, style="max-width: 200px;", number=2, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
-            <span style="width:20%" class="bar-3">$:text(content=slide, style="max-width: 200px;", number=3, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
-            <span style="width:10%" class="bar-4">$:text(content=slide, style="max-width: 200px;", number=4, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
-            <span style="width:10%" class="bar-5">$:text(content=slide, style="max-width: 200px;", number=5, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
+            <span style="width:$:slide['vote-1']%" class="bar-1">$:text(content=slide, style="max-width: 200px;", number=1, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
+            <span style="width:$:slide['vote-2']%" class="bar-2">$:text(content=slide, style="max-width: 200px;", number=2, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
+            <span style="width:$:slide['vote-3']%" class="bar-3">$:text(content=slide, style="max-width: 200px; text-overflow: ellipsis;", number=3, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
+            <span style="width:$:slide['vote-4']%" class="bar-4">$:text(content=slide, style="max-width: 200px;", number=4, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
+            <span style="width:$:slide['vote-5']%" class="bar-5">$:text(content=slide, style="max-width: 200px;", number=5, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
          </div>
 </div>

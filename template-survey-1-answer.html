@@ -33,6 +33,7 @@ $var description: Question + answers (with qr code)
       float: left;
       color: #fff;
       padding: 0.5em;
+      white-space: nowrap;
       text-overflow: ellipsis;
    }
    .bar-1 {
@@ -76,6 +77,6 @@ $var description: Question + answers (with qr code)
       $else:
          <!-- Show the poll results -->
          <div class="stacked-bar-graph">
-            <span style="width:100%" class="bar-1">$:text(content=slide, style="max-width: 200px", number=1, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
+            <span style="width:$:slide['vote-1']%" class="bar-1">$:text(content=slide, style="max-width: 200px;", number=1, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
          </div>
 </div>

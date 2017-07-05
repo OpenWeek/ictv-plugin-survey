@@ -88,12 +88,19 @@ def get_content(channel_id):
     json.dump(data, towrite, indent=4)
     towrite.close()
 
-    return [SurveyCapsule(question, author, answers, secret, channel_id, current["id"])]
+    votes = [None]*5
+    votes[0] = 40
+    votes[1] = 20
+    votes[2] = 10
+    votes[3] = 10
+    votes[4] = 20
+
+    return [SurveyCapsule(question, author, answers, votes, secret, channel_id, current["id"])]
 
 
 class SurveyCapsule(PluginCapsule):
-    def __init__(self, question, author, answers, secret, channel_id, question_id):
-        self._slides = [SurveySlide(question, author, answers, secret, channel_id, question_id)]
+    def __init__(self, question, author, answers, votes, secret, channel_id, question_id):
+        self._slides = [SurveySlide(question, author, answers, votes, secret, channel_id, question_id)]
 
     def get_slides(self):
         return self._slides
@@ -105,7 +112,7 @@ class SurveyCapsule(PluginCapsule):
         return str(self.__dict__)
 
 class SurveySlide(PluginSlide):
-    def __init__(self, question, author, answers, secret, channel_id, question_id):
+    def __init__(self, question, author, answers, votes, secret, channel_id, question_id):
         self._duration = 10000000
         self._nb_answers = len(answers)
         if self._nb_answers >= 6:
@@ -121,6 +128,10 @@ class SurveySlide(PluginSlide):
             self._content['secret'] = True
         else:
             self._content['secret'] = False
+            i = 1
+            for vote in votes:
+                self._content['vote-'+str(i)] = vote
+                i += 1
 
     def get_duration(self):
         return self._duration
