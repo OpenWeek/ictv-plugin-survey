@@ -36,6 +36,10 @@ $var description: Question + answers (with qr code)
       white-space: nowrap;
       text-overflow: ellipsis;
    }
+   .bar-no-votes {
+      width: 100%;
+      background: #D8D8D8;
+   }
    .bar-1 {
       background: #4175EA;
    }
@@ -83,18 +87,26 @@ $var description: Question + answers (with qr code)
       </div>
 
    $if slide:
-      $if slide['secret']:
-         <!-- Do not show the poll results -->
-         <!-- <p style="text-align: center">Poll results are secret.</p> -->
-         $pass
-      $else:
+      $if slide['show-results']:
          <!-- Show the poll results -->
          <div class="stacked-bar-graph">
             $ i = 1
             $while i <= slide['nb-answers']:
-               <span style="width:$:slide['votes'][i-1]%" class="bar-$i">
-                  $:text(content=slide, style="max-width: 200px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;", number=i, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
-               </span>
+               $if slide['percent-votes'][i-1] != 0:
+                  <span style="width:$:slide['percent-votes'][i-1]%" class="bar-$i">
+                     $:text(content=slide, style="max-width: 200px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;", number=i, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
+                  </span>
                $ i += 1
          </div>
+      $elif slide['no-votes']:
+         <!-- Show a message saying there is no votes yet -->
+         <div class="stacked-bar-graph">
+            <span class="bar-no-votes">
+               0 votes
+            </span>
+         </div>
+      $else:
+         <!-- Poll results are secret -->
+         <!-- <p style="text-align: center">Poll results are secret.</p> -->
+         $pass
 </div>

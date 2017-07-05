@@ -82,25 +82,33 @@ def get_content(channel_id):
            current["id"] = next_id + 1
            data["questions"].append(current)
 
+        #Compute the percentage for each answers
+        i = 0
+        nbVotesForEachAnswer = [None]*len(answers)
+        for answer in data["questions"][-1]["answers"]:
+            nbVotesForEachAnswer[i] = answer["votes"]
+            i += 1
+
+        percent_votes = [None]*len(answers)
+        totalNbVotes = data["questions"][-1]["totalVotes"]
+        if totalNbVotes != 0:
+            i = 0
+            for currentNbVotes in nbVotesForEachAnswer:
+                percent_votes[i] = (currentNbVotes/totalNbVotes) * 100
+                i += 1
+
     towrite = open('./plugins/survey/survey_questions.json', 'w')
     # TODO : make flexible
 
     json.dump(data, towrite, indent=4)
     towrite.close()
 
-    votes = [None]*5
-    votes[0] = 40
-    votes[1] = 20
-    votes[2] = 10
-    votes[3] = 10
-    votes[4] = 20
-
-    return [SurveyCapsule(question, author, answers, votes, secret, channel_id, current["id"])]
+    return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current["id"])]
 
 
 class SurveyCapsule(PluginCapsule):
-    def __init__(self, question, author, answers, votes, secret, channel_id, question_id):
-        self._slides = [SurveySlide(question, author, answers, votes, secret, channel_id, question_id)]
+    def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
+        self._slides = [SurveySlide(question, author, answers, percent_votes, secret, channel_id, question_id)]
 
     def get_slides(self):
         return self._slides
@@ -112,7 +120,7 @@ class SurveyCapsule(PluginCapsule):
         return str(self.__dict__)
 
 class SurveySlide(PluginSlide):
-    def __init__(self, question, author, answers, votes, secret, channel_id, question_id):
+    def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
         self._duration = 10000000
         self._nb_answers = len(answers)
         if self._nb_answers >= 6:
@@ -127,10 +135,15 @@ class SurveySlide(PluginSlide):
             i += 1
 
         if secret:
-            self._content['secret'] = True
+            self._content['show-results'] = False
         else:
-            self._content['secret'] = False
-            self._content['votes'] = votes
+            if None in percent_votes:
+                self._content['show-results'] = False
+                self._content['no-votes'] = True
+            else:
+                self._content['show-results'] = True
+                self._content['no-votes'] = False
+                self._content['percent-votes'] = percent_votes
 
     def get_duration(self):
         return self._duration

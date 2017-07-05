@@ -81,7 +81,7 @@ class Result(SurveyPage):
                     else:
                         time.sleep(0.1)
         except IOError:
-            print("IOError ! ")
+            print("IOError !")
             traceback.print_exc()
         else:
             for e in data["questions"]:
