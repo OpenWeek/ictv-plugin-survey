@@ -74,9 +74,11 @@ class Result(SurveyPage):
             traceback.print_exc()
         else:
             for e in data["questions"]:
-                if e["id"] == question:
-                    e["answers"][str(answer)] += 1
-            print(data)
+                if str(e["id"]) == str(question):
+                    toUpdate = e["answers"]
+                    print(toUpdate[str(answer)])
+                    print(e["answers"])
+                    #e["answers"][answer]["vote"] += 1
             json.dump(data, to_write, indent=4)
             data_file.close()
             to_write.close()
