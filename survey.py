@@ -118,6 +118,8 @@ class SurveySlide(PluginSlide):
         if self._nb_answers >= 6:
             self._nb_answers = 5
         self._content = {'title-1': {'text': question}, 'text-0': {'text': author}}
+
+        self._content['nb-answers'] = len(answers)
         i = 1
         for answer in answers:
             self._content['text-'+str(i)] = {'text': answer}
@@ -128,10 +130,7 @@ class SurveySlide(PluginSlide):
             self._content['secret'] = True
         else:
             self._content['secret'] = False
-            i = 1
-            for vote in votes:
-                self._content['vote-'+str(i)] = vote
-                i += 1
+            self._content['votes'] = votes
 
     def get_duration(self):
         return self._duration
@@ -140,9 +139,10 @@ class SurveySlide(PluginSlide):
         return self._content
 
     def get_template(self) -> str:
-        if self._nb_answers == 1:
-            return 'template-survey-1-answer'
-        return 'template-survey-'+str(self._nb_answers)+'-answers'
+        #if self._nb_answers == 1:
+        #    return 'template-survey-1-answer'
+        #return 'template-survey-'+str(self._nb_answers)+'-answers'
+        return 'template-survey'
 
     def __repr__(self):
         return str(self.__dict__)
