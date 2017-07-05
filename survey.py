@@ -136,6 +136,7 @@ class SurveySlide(PluginSlide):
 
         if secret:
             self._content['show-results'] = False
+            self._content['no-votes'] = None #no information about this
         else:
             if None in percent_votes:
                 self._content['show-results'] = False
