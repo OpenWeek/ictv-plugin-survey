@@ -6,12 +6,13 @@ $var description: Question + answers (with qr code)
    #question {
       margin-bottom: 6%;
    }
-   .answers {
+   #answers {
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
       align-items: center;
       justify-content: space-around;
+      margin-bottom: 6%;
    }
    .answer {
       margin: 8%;
@@ -19,6 +20,24 @@ $var description: Question + answers (with qr code)
    .text-answer {
       text-align: center;
       word-wrap: break-word;
+   }
+   .stacked-bar-graph {
+      width: 100%;
+      height: 3%;
+      color:#414042;
+   }
+   .stacked-bar-graph span {
+      display: inline-block;
+      height:100%;
+      box-sizing: border-box;
+      float: left;
+      color: #fff;
+      padding: 0.5em;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+   }
+   .bar-1 {
+      background: #4175EA;
    }
 </style>
 
@@ -36,7 +55,7 @@ $var description: Question + answers (with qr code)
       </strong>
    </div>
 
-    <div class="answers">
+    <div id="answers">
       $ i = 1
       $while i <= 1:
          <div class="answer" style="order: $i">
@@ -49,4 +68,15 @@ $var description: Question + answers (with qr code)
          </div>
          $ i += 1
    </div>
+
+   $if slide:
+      $if slide['secret']:
+         <!-- Do not show the poll results -->
+         <!-- <p style="text-align: center">Poll results are secret.</p> -->
+         $pass
+      $else:
+         <!-- Show the poll results -->
+         <div class="stacked-bar-graph">
+            <span style="width:$:slide['vote-1']%" class="bar-1">$:text(content=slide, style="max-width: 200px;", number=1, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")</span>
+         </div>
 </div>

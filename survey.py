@@ -51,6 +51,7 @@ def get_content(channel_id):
         "id": 1,
         "channel" : channel_id,
         "question": question,
+        "totalVotes":0,
         "answers" : []
     }
 
@@ -67,19 +68,34 @@ def get_content(channel_id):
         data_file = open('./plugins/survey/survey_questions.json', 'r')
         data = json.load(data_file)
         data_file.close()
-    except IOError:
+    except:
         data = {
             "questions": [current]
         }
     else:
         found = False
         for e in data["questions"]:
-            if e["channel"] == channel_id:
-                found = True
+           if e["channel"] == channel_id:
+               found = True
         if not found :
-            next_id = data["questions"][-1]["id"]
-            current["id"] = next_id + 1
-            data["questions"].append(current)
+           next_id = data["questions"][-1]["id"]
+           current["id"] = next_id + 1
+           data["questions"].append(current)
+
+        #Compute the percentage for each answers
+        i = 0
+        nbVotesForEachAnswer = [None]*len(answers)
+        for answer in data["questions"][-1]["answers"]:
+            nbVotesForEachAnswer[i] = answer["votes"]
+            i += 1
+
+        percent_votes = [None]*len(answers)
+        totalNbVotes = data["questions"][-1]["totalVotes"]
+        if totalNbVotes != 0:
+            i = 0
+            for currentNbVotes in nbVotesForEachAnswer:
+                percent_votes[i] = (currentNbVotes/totalNbVotes) * 100
+                i += 1
 
     towrite = open('./plugins/survey/survey_questions.json', 'w')
     # TODO : make flexible
@@ -87,12 +103,12 @@ def get_content(channel_id):
     json.dump(data, towrite, indent=4)
     towrite.close()
 
-    return [SurveyCapsule(question, author, answers, secret, channel_id, current["id"])]
+    return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current["id"])]
 
 
 class SurveyCapsule(PluginCapsule):
-    def __init__(self, question, author, answers, secret, channel_id, question_id):
-        self._slides = [SurveySlide(question, author, answers, secret, channel_id, question_id)]
+    def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
+        self._slides = [SurveySlide(question, author, answers, percent_votes, secret, channel_id, question_id)]
 
     def get_slides(self):
         return self._slides
@@ -104,20 +120,28 @@ class SurveyCapsule(PluginCapsule):
         return str(self.__dict__)
 
 class SurveySlide(PluginSlide):
-    def __init__(self, question, author, answers, secret, channel_id, question_id):
+    def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
         self._duration = 10000000
-        self._nb_answers = len(answers)
-        if self._nb_answers >= 6:
-            self._nb_answers = 5
         self._content = {'title-1': {'text': question}, 'text-0': {'text': author}}
+
+        self._content['nb-answers'] = len(answers)
         i = 1
         for answer in answers:
             self._content['text-'+str(i)] = {'text': answer}
-            self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+'/'+str(question_id)+'/'+str(i)}
+            self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+str(question_id)+'/'+str(i)}
             i += 1
 
         if secret:
-            pass #TODO
+            self._content['show-results'] = False
+            self._content['no-votes'] = None #no information about this
+        else:
+            if None in percent_votes:
+                self._content['show-results'] = False
+                self._content['no-votes'] = True
+            else:
+                self._content['show-results'] = True
+                self._content['no-votes'] = False
+                self._content['percent-votes'] = percent_votes
 
     def get_duration(self):
         return self._duration
@@ -126,9 +150,10 @@ class SurveySlide(PluginSlide):
         return self._content
 
     def get_template(self) -> str:
-        if self._nb_answers == 1:
-            return 'template-survey-1-answer'
-        return 'template-survey-'+str(self._nb_answers)+'-answers'
+        #if self._nb_answers == 1:
+        #    return 'template-survey-1-answer'
+        #return 'template-survey-'+str(self._nb_answers)+'-answers'
+        return 'template-survey'
 
     def __repr__(self):
         return str(self.__dict__)

@@ -20,13 +20,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import copy
-import ipaddress
-import json
 import os
-from collections import OrderedDict
+
+import errno
 import web
 import json
+import traceback
+import fcntl
+import time
 from ictv import get_root_path
 from ictv.pages.utils import ICTVPage
 
@@ -65,9 +66,35 @@ class SurveyPage(ICTVPage):
 
 class Result(SurveyPage):
     def GET(self, question, answer):
-        #data_file = open('./plugins/survey/survey_questions.json', 'w')
-        #data = json.load(data_file)
-        #return "Vous avez choisi la réponse "+str(arg)+" !" #TODO : ajouter bouton changer ma réponse + voir les résultats
+        try:
+            data_file = open('./plugins/survey/survey_questions.json', 'r')
+            data = json.load(data_file)
+            data_file.close()
+            to_write = open('./plugins/survey/survey_questions.json', 'w')
+            while True:
+                try:
+                    lock = fcntl.flock(to_write, fcntl.LOCK_EX)
+                    break
+                except IOError as e:
+                    if e.errno != errno.EAGAIN:
+                        raise
+                    else:
+                        time.sleep(0.1)
+        except IOError:
+            print("IOError !")
+            traceback.print_exc()
+        else:
+            for e in data["questions"]:
+                if str(e["id"]) == str(question):
+                    e["totalVotes"] += 1
+                    i = 1
+                    for el in e["answers"]:
+                        if str(i) == answer:
+                            el["votes"] += 1
+                        i += 1
+            json.dump(data, to_write, indent=4)
+            to_write.close()
+
         return self.renderer.template_reponse(answer=answer, question=question)  # + url stat
 
 
@@ -88,4 +115,3 @@ class Stat(SurveyPage):
                     return self.renderer.template_stat(q)
 
             return "Not found"
-
