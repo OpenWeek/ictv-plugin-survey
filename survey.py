@@ -51,6 +51,7 @@ def get_content(channel_id):
         "id": 1,
         "channel" : channel_id,
         "question": question,
+        "totalVotes":0,
         "answers" : []
     }
 
@@ -67,19 +68,19 @@ def get_content(channel_id):
         data_file = open('./plugins/survey/survey_questions.json', 'r')
         data = json.load(data_file)
         data_file.close()
-    except IOError:
+    except:
         data = {
             "questions": [current]
         }
     else:
         found = False
         for e in data["questions"]:
-            if e["channel"] == channel_id:
-                found = True
+           if e["channel"] == channel_id:
+               found = True
         if not found :
-            next_id = data["questions"][-1]["id"]
-            current["id"] = next_id + 1
-            data["questions"].append(current)
+           next_id = data["questions"][-1]["id"]
+           current["id"] = next_id + 1
+           data["questions"].append(current)
 
     towrite = open('./plugins/survey/survey_questions.json', 'w')
     # TODO : make flexible
