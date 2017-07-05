@@ -113,11 +113,13 @@ class SurveySlide(PluginSlide):
         i = 1
         for answer in answers:
             self._content['text-'+str(i)] = {'text': answer}
-            self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channels/'+str(channel_id)+'/result/'+'/'+str(question_id)+'/'+str(i)}
+            self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channel/'+str(channel_id)+'/result/'+str(question_id)+'/'+str(i)}
             i += 1
 
         if secret:
-            pass #TODO
+            self._content['secret'] = True
+        else:
+            self._content['secret'] = False
 
     def get_duration(self):
         return self._duration

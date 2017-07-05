@@ -28,6 +28,7 @@ from collections import OrderedDict
 import web
 import json
 import traceback
+from ictv import get_root_path
 from ictv.pages.utils import ICTVPage
 
 
@@ -42,7 +43,7 @@ def get_app(ictv_app):
     )
 
     app = web.application(urls, globals())
-    #app.renderer = web.template.render(globals={})
+    app.renderer = web.template.render(os.path.join(get_root_path(), 'plugins/survey/templates'), globals={'print':print})
 
     SurveyPage.plugin_app = app
 
@@ -83,7 +84,7 @@ class Result(SurveyPage):
             data_file.close()
             to_write.close()
 
-        return "Vous avez choisi la réponse "+str(answer)+" !" #TODO : ajouter bouton changer ma réponse + voir les résultats
+        return self.renderer.template_reponse(answer=answer, question=question)  # + url stat
 
 
 class IndexPage(SurveyPage):
@@ -100,8 +101,6 @@ class Stat(SurveyPage):
         else:
             for q in data["questions"]:
                 if str(q["id"]) == id:
-                    print(q["answers"][0])
-                    return "Resultat : "+ str(q["answers"][0]["votes"])
+                    return self.renderer.template_stat(q)
 
             return "Not found"
-
