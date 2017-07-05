@@ -122,9 +122,6 @@ class SurveyCapsule(PluginCapsule):
 class SurveySlide(PluginSlide):
     def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
         self._duration = 10000000
-        self._nb_answers = len(answers)
-        if self._nb_answers >= 6:
-            self._nb_answers = 5
         self._content = {'title-1': {'text': question}, 'text-0': {'text': author}}
 
         self._content['nb-answers'] = len(answers)
