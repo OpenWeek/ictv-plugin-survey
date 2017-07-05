@@ -1,6 +1,6 @@
 plugin:
   webapp: yes
-  static: no
+  static: yes
   description: |
     Work in progress !
   dependencies:

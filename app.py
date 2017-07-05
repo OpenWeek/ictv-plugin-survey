@@ -42,7 +42,7 @@ def get_app(ictv_app):
     )
 
     app = web.application(urls, globals())
-    app.renderer = web.template.render(os.path.join(get_root_path(), 'plugins/survey/templates'), globals={'print':print})
+    app.renderer = web.template.render(os.path.join(get_root_path(), 'plugins/survey/templates'), globals={'print':print, 'str':str})
 
     SurveyPage.plugin_app = app
 
