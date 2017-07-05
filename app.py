@@ -87,4 +87,3 @@ class Stat(SurveyPage):
                     return "Resultat : "+ str(q["answers"][0]["votes"])
 
             return "Not found"
-
