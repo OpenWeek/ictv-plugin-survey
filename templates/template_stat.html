@@ -1,0 +1,10 @@
+$def with (question)
+
+$ q = question["question"]
+<div>
+    Résultat de la question : $q
+</div>
+$for a in question["answers"]
+    <div>
+        $a["answer"] : $a["votes"]
+    </div>
