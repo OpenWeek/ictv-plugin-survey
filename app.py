@@ -76,10 +76,12 @@ class Result(SurveyPage):
         else:
             for e in data["questions"]:
                 if str(e["id"]) == str(question):
-                    toUpdate = e["answers"]
-                    print(toUpdate[str(answer)])
-                    print(e["answers"])
-                    #e["answers"][answer]["vote"] += 1
+                    i = 1
+                    for el in e["answers"]:
+                        if str(i) == answer:
+                            el["votes"] += 1
+                            print(el["votes"])
+                        i += 1
             json.dump(data, to_write, indent=4)
             data_file.close()
             to_write.close()
