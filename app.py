@@ -20,14 +20,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import copy
-import ipaddress
-import json
 import os
-from collections import OrderedDict
+
+import errno
 import web
 import json
 import traceback
+import fcntl
+import time
 from ictv import get_root_path
 from ictv.pages.utils import ICTVPage
 
@@ -69,7 +69,17 @@ class Result(SurveyPage):
         try:
             data_file = open('./plugins/survey/survey_questions.json', 'r')
             data = json.load(data_file)
+            data_file.close()
             to_write = open('./plugins/survey/survey_questions.json', 'w')
+            while True:
+                try:
+                    lock = fcntl.flock(to_write, fcntl.LOCK_EX)
+                    break
+                except IOError as e:
+                    if e.errno != errno.EAGAIN:
+                        raise
+                    else:
+                        time.sleep(0.1)
         except IOError:
             print("IOError ! ")
             traceback.print_exc()
@@ -84,7 +94,6 @@ class Result(SurveyPage):
                             print(el["votes"])
                         i += 1
             json.dump(data, to_write, indent=4)
-            data_file.close()
             to_write.close()
 
         return self.renderer.template_reponse(answer=answer, question=question)  # + url stat
