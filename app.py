@@ -91,7 +91,6 @@ class Result(SurveyPage):
                     for el in e["answers"]:
                         if str(i) == answer:
                             el["votes"] += 1
-                            print(el["votes"])
                         i += 1
             json.dump(data, to_write, indent=4)
             to_write.close()
