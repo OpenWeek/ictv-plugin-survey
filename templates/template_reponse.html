@@ -1,11 +1,68 @@
-$def with (question, answer)
+$def with (question, answer, url)
 
-<div>
-    Vous avez choisi $answer
-</div>
-<div>
-    pour la question : $question
-</div>
-<div>
-    <a href="http://test.com">Url à changer -> stat</a>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Vote</title>
+
+    <script src="/static/js/Chart.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: Verdana, Geneva, sans-serif
+        }
+       .centre {
+            margin-left: auto;
+            margin-right: auto;
+            width: 300px;
+        }
+        .text {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .question {
+            font-size: 27px;
+        }
+        canvas {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .button {
+          display: inline-block;
+          border-radius: 4px;
+          background-color: #f4511e;
+          border: none;
+          color: #FFFFFF;
+          text-align: center;
+          font-size: 28px;
+          padding: 10px;
+          width: 100%;
+          transition: all 0.5s;
+          cursor: pointer;
+          margin: 5px;
+          vertical-align: middle;
+        }
+
+
+    </style>
+  </head>
+  <body>
+
+    <div class="centre">
+
+        <div class="text">
+            À la question : <br>
+            <span class="question">$question</span>
+        </div>
+        <div class="text">
+            Vous avez choisi: <br>
+            <span class="question">$answer</span>
+        </div>
+        <div>
+            <button type="button" class="button" style="background-color: #008cba" onclick='window.location.href="$url"'>Résultats</button>
+            <button type="button" class="button" style="background-color: #e41734;" onclick='window.location.href="testqhjdjb'>Modifier</button>
+        </div>
+    </div>
+  </body>
+  </html>

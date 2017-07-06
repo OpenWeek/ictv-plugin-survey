@@ -66,6 +66,9 @@ class SurveyPage(ICTVPage):
 
 class Result(SurveyPage):
     def GET(self, question, answer):
+        questionTxt = "erreur: question inaccessible"
+        answerTxt = "erreur: réponse inexistante"
+        channel_id = -1
         try:
             data_file = open('./plugins/survey/survey_questions.json', 'r')
             data = json.load(data_file)
@@ -86,16 +89,19 @@ class Result(SurveyPage):
         else:
             for e in data["questions"]:
                 if str(e["id"]) == str(question):
+                    questionTxt = e["question"]
+                    channel_id = e["channel"]
                     e["totalVotes"] += 1
                     i = 1
                     for el in e["answers"]:
                         if str(i) == answer:
+                            answerTxt = el["answer"]
                             el["votes"] += 1
                         i += 1
             json.dump(data, to_write, indent=4)
             to_write.close()
-
-        return self.renderer.template_reponse(answer=answer, question=question)  # + url stat
+        url = web.ctx.homedomain+'/channels/'+str(channel_id)+'/stat/'+question
+        return self.renderer.template_reponse(answer=answerTxt, question=questionTxt, url=url)  # + url stat
 
 
 class IndexPage(SurveyPage):

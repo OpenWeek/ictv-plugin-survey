@@ -5,7 +5,7 @@ $def with (question)
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>title</title>
+    <title>Stat</title>
 
     <script src="/static/js/Chart.bundle.min.js"></script>
     <style>
@@ -34,7 +34,7 @@ $def with (question)
     $ q = question["question"]
     <div class="centre">
         <div class="text">
-            Résultat de la question :<br>
+            Résultat du sondage :<br>
             <span class="question">$q </span>
         </div>
         <canvas id="myChart"></canvas>
@@ -60,9 +60,11 @@ $def with (question)
                         $for a in question["answers"]:
                             $a["votes"] ,
                         ],
-                    backgroundColor: ['rgba(255, 99, 132, 0.2)',
-                                        'rgba(0, 99, 132, 0.2)',
-                                        'rgba(255, 99, 12, 0.2)']
+                    backgroundColor: ['rgba(255, 165, 0, 0.4)',
+                                        'rgba(30, 144, 255, 0.4)',
+                                        'rgba(255, 64, 64, 0.4)',
+                                        'rgba(143, 0, 255, 0.4)',
+                                        'rgba(188, 238, 104, 0.6)']
                 }],
 
                 // These labels appear in the legend and in the tooltips when hovering different arcs
@@ -74,9 +76,7 @@ $def with (question)
             },
 
             // Configuration options go here
-            options: {
-                responsive: false
-            }
+            options: {}
         });
     </script>
   </body>
