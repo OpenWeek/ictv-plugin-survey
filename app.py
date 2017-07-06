@@ -21,6 +21,7 @@
 
 
 import os
+import hashlib
 
 import errno
 import web
@@ -110,12 +111,20 @@ class Stat(SurveyPage):
         else:
             for e in data["questions"]:
                 if str(e["id"]) == str(id):
-                    e["totalVotes"] += 1
-                    i = 1
-                    for el in e["answers"]:
-                        if str(i) == answer:
-                            el["votes"] += 1
-                        i += 1
+                    hash = hashlib.md5(("un peu de text non previsible" + str(e["channel"]) + str(id)).encode('utf-8')).hexdigest()
+                    #print("cookies: "+str(web.cookies().get('webpy_session_id')))
+                    if not web.cookies().get(hash):
+                        i = 1
+                        for el in e["answers"]:
+                            if str(i) == answer:
+                                e["totalVotes"] += 1
+                                el["votes"] += 1
+                                #set cookies
+                                web.setcookie(hash,1, path=web.ctx.homepath)
+                                break
+                            i += 1
+                    else:
+                        print("cookie recognized")
             json.dump(data, to_write, indent=4)
             to_write.close()
             for q in data["questions"]:
