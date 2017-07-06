@@ -38,9 +38,9 @@ def get_app(ictv_app):
 
     urls = (
         'index', 'ictv.plugins.survey.app.IndexPage',
-        'validate/(.+)/(.+)', 'ictv.plugins.survey.app.Result',
+        'validate/(.+)/(.+)', 'ictv.plugins.survey.app.Validate',
         'stat/(.+)/(.+)', 'ictv.plugins.survey.app.Stat',
-        'modify/(.+)', 'ictv.plugins.survey.app.Cancel'
+        'modify/(.+)', 'ictv.plugins.survey.app.Modify'
 
     )
 
@@ -66,7 +66,7 @@ class SurveyPage(ICTVPage):
         return self.survey_app.renderer
 
 
-class Result(SurveyPage):
+class Validate(SurveyPage):
     def GET(self, question, answer):
         questionTxt = "erreur: question inaccessible"
         answerTxt = "erreur: réponse inexistante"
@@ -134,7 +134,7 @@ class Stat(SurveyPage):
             return "Not found"
 
 
-class Cancel(SurveyPage):
+class Modify(SurveyPage):
     def GET(self, id):
         answers = []
         channel_id = -1
