@@ -41,19 +41,19 @@ $var description: Question + answers (with qr code)
       background: #D8D8D8;
    }
    .bar-1 {
-      background: #4175EA;
+      background: #FFA500;
    }
    .bar-2 {
-      background: #68EA9A;
+      background: #1E90FF;
    }
    .bar-3 {
-      background: #886AE9;
+      background: #FF4040;
    }
    .bar-4 {
-      background: #AA9A54;
+      background: #8F00FF;
    }
    .bar-5 {
-      background: #65A8B1;
+      background: #BCEE68;
    }
 </style>
 
@@ -92,8 +92,9 @@ $var description: Question + answers (with qr code)
          <div class="stacked-bar-graph">
             $ i = 1
             $while i <= slide['nb-answers']:
-               $if slide['percent-votes'][i-1] != 0:
-                  <span style="width:$:slide['percent-votes'][i-1]%" class="bar-$i">
+               $if slide['ratio-votes'][i-1] != 0:
+                  $ width = slide['ratio-votes'][i-1]*100
+                  <span style="width:$:width%" class="bar-$i">
                      $:text(content=slide, style="max-width: 200px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;", number=i, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
                   </span>
                $ i += 1

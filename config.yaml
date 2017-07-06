@@ -21,7 +21,7 @@ channels_params:
      placeholder: 'Answer'
      type: list[string]
      default: ['Oui', 'Non']
-     add: 'Add answer'
+     add: 'Add answer (5 max.)'
   #Idée : laisser la possibilité d'entrer 4 réponses et si vide pas afficher
   secret:
     name: 'Survey results are secret'

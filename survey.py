@@ -48,18 +48,22 @@ def get_content(channel_id):
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
 
+    if len(answers) > 5:
+        raise MisconfiguredParameters('answers', answers, "There shouldn't be more than 5 answers provided.")
+
     #For the .json
     current_question_entry = None
+    must_write_json = False
     try:
-        data_file = open('./plugins/survey/survey_questions.json', 'r')
-        saved_data = json.load(data_file)
-        data_file.close()
+        with open('./plugins/survey/survey_questions.json', 'r') as data_file:
+            saved_data = json.load(data_file)
     except:
+        must_write_json = True
         saved_data = {
             "questions": [create_new_question_entry(channel_id, question, answers)]
         }
 
-        percent_votes = [None]*len(answers)
+        ratio_votes = [None]*len(answers)
         current_question_entry = saved_data["questions"][-1]
     else:
         #Check that the .json file is valid
@@ -70,18 +74,10 @@ def get_content(channel_id):
         if current_question_entry != None:
             #Check if the .json is up-to-date with the configuration
             if not is_json_up_to_date(answers, current_question_entry["answers"]):
-                current_question_entry["question"] = question
-                current_question_entry["totalVotes"] = 0
-                updated_answers = [None]*len(answers)
-                i = 0
-                for answer in answers:
-                    updated_answers[i] = {
-                        "answer": answer,
-                        "votes": 0
-                    }
-                    i += 1
-                current_question_entry["answers"] = updated_answers
+                must_write_json = True
+                update_question(current_question_entry, question, answers)
         else: #the question was not contained in the .json file
+            must_write_json = True
             new_question_entry = create_new_question_entry(channel_id, question, answers)
             if len(saved_data["questions"]) == 0:
                 new_question_entry["id"] = 1
@@ -91,15 +87,13 @@ def get_content(channel_id):
             current_question_entry = new_question_entry
 
         #Compute the percentage for each answers
-        percent_votes = compute_percent_votes(current_question_entry["answers"], current_question_entry["totalVotes"])
+        ratio_votes = compute_ratio_votes(current_question_entry["answers"], current_question_entry["totalVotes"])
 
-    towrite = open('./plugins/survey/survey_questions.json', 'w')
-    # TODO : make flexible
+    if must_write_json:
+        with open('./plugins/survey/survey_questions.json', 'w') as file_to_write:
+            json.dump(saved_data, file_to_write, indent=4)
 
-    json.dump(saved_data, towrite, indent=4)
-    towrite.close()
-
-    return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current_question_entry["id"])]
+    return [SurveyCapsule(question, author, answers, ratio_votes, secret, channel_id, current_question_entry["id"])]
 
 def is_json_valid(json_data):
     """ Check if the .json file contains valid syntax for a survey """
@@ -159,16 +153,17 @@ def find_question_entry(json_data, channel_id):
     return None
 
 def is_json_up_to_date(config_answers, saved_answers):
+    """ Check if the .json file and the configuration are coherent with one another """
     #config_answers is a list of strings
     #saved_answers is a list of dictionary with a key "answer" and a key "votes"
     if not len(config_answers) == len(saved_answers):
         return False
-    else:
-        if are_answers_updated(config_answers, saved_answers):
-            return False
+    elif are_answers_updated(config_answers, saved_answers):
+        return False
     return True
 
 def are_answers_updated(config_answers, saved_answers):
+    """ Check if all the saved answers are the answers stored in the configuration """
     #config_answers is a list of strings
     #saved_answers is a list of dictionary with a key "answer" and a key "votes"
     for saved_answer in saved_answers:
@@ -176,22 +171,32 @@ def are_answers_updated(config_answers, saved_answers):
             return True
     return False
 
-def compute_percent_votes(saved_answers, total_nb_votes):
+def update_question(current_question_entry, new_question, new_answers):
+    """ Change the information contained in @current_question_entry to what's inside @new_question and @new_answers """
+    current_question_entry["question"] = new_question
+    current_question_entry["totalVotes"] = 0
+    updated_answers = []
+    for answer in new_answers:
+        updated_answers.append({
+            "answer": answer,
+            "votes": 0
+        })
+    current_question_entry["answers"] = updated_answers
+
+def compute_ratio_votes(saved_answers, total_nb_votes):
     """ Compute the percentage of answer for each answer """
     if total_nb_votes == 0:
-        return [None]*len(saved_answers)
+        return None
 
-    i = 0
-    percent_votes = [None]*len(saved_answers)
+    ratio_votes = []
     for answer in saved_answers:
-        percent_votes[i] = (answer["votes"]/total_nb_votes) * 100
-        i += 1
+        ratio_votes.append(answer["votes"]/total_nb_votes)
 
-    return percent_votes
+    return ratio_votes
 
 class SurveyCapsule(PluginCapsule):
-    def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
-        self._slides = [SurveySlide(question, author, answers, percent_votes, secret, channel_id, question_id)]
+    def __init__(self, question, author, answers, ratio_votes, secret, channel_id, question_id):
+        self._slides = [SurveySlide(question, author, answers, ratio_votes, secret, channel_id, question_id)]
 
     def get_slides(self):
         return self._slides
@@ -203,11 +208,14 @@ class SurveyCapsule(PluginCapsule):
         return str(self.__dict__)
 
 class SurveySlide(PluginSlide):
-    def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
+    def __init__(self, question, author, answers, ratio_votes, secret, channel_id, question_id):
         self._duration = 10000000
         self._content = {'title-1': {'text': question}, 'text-0': {'text': author}}
 
-        self._content['nb-answers'] = len(answers)
+        if len(answers) <= 5:
+            self._content['nb-answers'] = len(answers)
+        else:
+            self._content['nb-answers'] = 5
         i = 1
         for answer in answers:
             self._content['text-'+str(i)] = {'text': answer}
@@ -218,13 +226,13 @@ class SurveySlide(PluginSlide):
             self._content['show-results'] = False
             self._content['no-votes'] = None #no information about this
         else:
-            if None in percent_votes:
+            if ratio_votes == None:
                 self._content['show-results'] = False
                 self._content['no-votes'] = True
             else:
                 self._content['show-results'] = True
                 self._content['no-votes'] = False
-                self._content['percent-votes'] = percent_votes
+                self._content['ratio-votes'] = ratio_votes
 
     def get_duration(self):
         return self._duration
@@ -233,9 +241,6 @@ class SurveySlide(PluginSlide):
         return self._content
 
     def get_template(self) -> str:
-        #if self._nb_answers == 1:
-        #    return 'template-survey-1-answer'
-        #return 'template-survey-'+str(self._nb_answers)+'-answers'
         return 'template-survey'
 
     def __repr__(self):
