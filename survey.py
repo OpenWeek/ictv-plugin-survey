@@ -60,36 +60,31 @@ def get_content(channel_id):
         percent_votes = [None]*len(answers)
     else:
         found = False
-        current_index = 0
-        for e in data["questions"]:
-            if e["channel"] == channel_id:
-                found = True
-                #Check if the .json is up-to-date with the configuration
-                same_nb_answers = (len(answers) == len(data["questions"][current_index]["answers"]))
-                updated = False
-                if not same_nb_answers:
+        current_question_entry = find_question_entry(data, channel_id)
+        if current_question_entry != None:
+            found = True
+            #Check if the .json is up-to-date with the configuration
+            same_nb_answers = (len(answers) == len(current_question_entry["answers"]))
+            updated = False
+            if not same_nb_answers:
+                updated = True
+            else:
+                if are_answers_updated(answers, current_question_entry["answers"]):
                     updated = True
-                else:
-                    if are_answers_updated(answers, data["questions"][current_index]["answers"]):
-                        updated = True
 
-                if updated:
-                    data["questions"][current_index]["question"] = question
-                    data["questions"][current_index]["totalVotes"] = 0
-                    updated_answers = [None]*len(answers)
-                    i = 0
-                    for answer in answers:
-                        updated_answers[i] = {
-                            "answer": answer,
-                            "votes": 0
-                        }
-                        i += 1
-                    data["questions"][current_index]["answers"] = updated_answers
-
-                break
-            current_index += 1
-
-        if not found :
+            if updated:
+                current_question_entry["question"] = question
+                current_question_entry["totalVotes"] = 0
+                updated_answers = [None]*len(answers)
+                i = 0
+                for answer in answers:
+                    updated_answers[i] = {
+                        "answer": answer,
+                        "votes": 0
+                    }
+                    i += 1
+                current_question_entry["answers"] = updated_answers
+        else: #the question was not contained in the .json file
             new_question_entry = create_new_question_entry(channel_id, question, answers)
             if len(data["questions"]) == 0:
                 new_question_entry["id"] = 1
@@ -101,13 +96,13 @@ def get_content(channel_id):
 
         #Compute the percentage for each answers
         i = 0
-        nbVotesForEachAnswer = [None]*len(data["questions"][current_index]["answers"])
-        for answer in data["questions"][current_index]["answers"]:
+        nbVotesForEachAnswer = [None]*len(current_question_entry["answers"])
+        for answer in current_question_entry["answers"]:
             nbVotesForEachAnswer[i] = answer["votes"]
             i += 1
 
-        percent_votes = [None]*len(data["questions"][current_index]["answers"])
-        totalNbVotes = data["questions"][current_index]["totalVotes"]
+        percent_votes = [None]*len(current_question_entry["answers"])
+        totalNbVotes = current_question_entry["totalVotes"]
         if totalNbVotes != 0:
             i = 0
             for currentNbVotes in nbVotesForEachAnswer:
@@ -120,7 +115,17 @@ def get_content(channel_id):
     json.dump(data, towrite, indent=4)
     towrite.close()
 
-    return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, data["questions"][current_index]["id"])]
+    return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current_question_entry["id"])]
+
+def find_question_entry(json_data, channel_id):
+    """
+        Find the question entry in the data of the .json file
+        Returns the dictionary that represents the question or @None if it wasn't found
+    """
+    for question in json_data["questions"]:
+        if question["channel"] == channel_id:
+            return question
+    return None
 
 def create_new_question_entry(channel_id, question, answers):
     """ Creates a new entry for a question in the .json file (with id=1) and returns it """
