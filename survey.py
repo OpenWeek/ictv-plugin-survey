@@ -35,6 +35,7 @@ from pprint import pprint
 
 
 def get_content(channel_id):
+    #from the configuration file
     channel = Channel.get(channel_id)
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
     logger = get_logger('survey', channel)
@@ -47,6 +48,7 @@ def get_content(channel_id):
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
 
+    #For the .json
     current = {
         "id": 1,
         "channel" : channel_id,
@@ -57,10 +59,8 @@ def get_content(channel_id):
 
     for e in answers:
         curr = {
-
             "answer": e,
             "votes": 0
-
         }
 
         current["answers"].append(curr)
@@ -74,28 +74,43 @@ def get_content(channel_id):
         }
     else:
         found = False
+        current_index = 0
         for e in data["questions"]:
-           if e["channel"] == channel_id:
-               found = True
+            if e["channel"] == channel_id:
+                found = True
+                #Check if the .json is up-to-date with the configuration
+                same_nb_answers = (len(answers) == len(data["questions"][current_index]["answers"]))
+                updated = False
+                if not same_nb_answers:
+                    updated = True
+                else:
+                    if are_answers_updated(answers, data["questions"][current_index]["answers"]):
+                        updated = True
+                print(same_nb_answers)
+                print(updated)
+                if updated:
+                    data["questions"][current_index]["question"] = question
+                    data["questions"][current_index]["totalVotes"] = 0
+                    updated_answers = [None]*len(answers)
+                    i = 0
+                    for answer in answers:
+                        updated_answers[i] = {
+                            "answer": answer,
+                            "votes": 0
+                        }
+                        i += 1
+                    data["questions"][current_index]["answers"] = updated_answers
+
+                break
+            current_index += 1
         if not found :
-           next_id = data["questions"][-1]["id"]
-           current["id"] = next_id + 1
+           if len(data["questions"]) == 0:
+               current["id"] = 1
+           else:
+               next_id = data["questions"][-1]["id"]
+               current["id"] = next_id + 1
            data["questions"].append(current)
-
-        #Compute the percentage for each answers
-        i = 0
-        nbVotesForEachAnswer = [None]*len(answers)
-        for answer in data["questions"][-1]["answers"]:
-            nbVotesForEachAnswer[i] = answer["votes"]
-            i += 1
-
-        percent_votes = [None]*len(answers)
-        totalNbVotes = data["questions"][-1]["totalVotes"]
-        if totalNbVotes != 0:
-            i = 0
-            for currentNbVotes in nbVotesForEachAnswer:
-                percent_votes[i] = (currentNbVotes/totalNbVotes) * 100
-                i += 1
+           current_index = len(data["questions"])-1
 
     towrite = open('./plugins/survey/survey_questions.json', 'w')
     # TODO : make flexible
@@ -103,8 +118,30 @@ def get_content(channel_id):
     json.dump(data, towrite, indent=4)
     towrite.close()
 
+    #Compute the percentage for each answers
+    i = 0
+    nbVotesForEachAnswer = [None]*len(data["questions"][current_index]["answers"])
+    for answer in data["questions"][current_index]["answers"]:
+        nbVotesForEachAnswer[i] = answer["votes"]
+        i += 1
+
+    percent_votes = [None]*len(data["questions"][current_index]["answers"])
+    totalNbVotes = data["questions"][current_index]["totalVotes"]
+    if totalNbVotes != 0:
+        i = 0
+        for currentNbVotes in nbVotesForEachAnswer:
+            percent_votes[i] = (currentNbVotes/totalNbVotes) * 100
+            i += 1
+
     return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current["id"])]
 
+def are_answers_updated(config_answers, saved_answers):
+    #config_answers is a list of strings
+    #saved_answers is a list of dictionary with a key "answer" and a key "votes"
+    for saved_answer in saved_answers:
+        if saved_answer["answer"] not in config_answers:
+            return True
+    return False
 
 class SurveyCapsule(PluginCapsule):
     def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
