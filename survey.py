@@ -53,12 +53,12 @@ def get_content(channel_id):
 
     #For the .json
     current_question_entry = None
-    must_update_json = False
+    must_write_json = False
     try:
         with open('./plugins/survey/survey_questions.json', 'r') as data_file:
             saved_data = json.load(data_file)
     except:
-        must_update_json = True
+        must_write_json = True
         saved_data = {
             "questions": [create_new_question_entry(channel_id, question, answers)]
         }
@@ -74,20 +74,10 @@ def get_content(channel_id):
         if current_question_entry != None:
             #Check if the .json is up-to-date with the configuration
             if not is_json_up_to_date(answers, current_question_entry["answers"]):
-                must_update_json = True
-                current_question_entry["question"] = question
-                current_question_entry["totalVotes"] = 0
-                updated_answers = [None]*len(answers)
-                i = 0
-                for answer in answers:
-                    updated_answers[i] = {
-                        "answer": answer,
-                        "votes": 0
-                    }
-                    i += 1
-                current_question_entry["answers"] = updated_answers
+                must_write_json = True
+                update_question(current_question_entry, question, answers)
         else: #the question was not contained in the .json file
-            must_update_json = True
+            must_write_json = True
             new_question_entry = create_new_question_entry(channel_id, question, answers)
             if len(saved_data["questions"]) == 0:
                 new_question_entry["id"] = 1
@@ -99,7 +89,7 @@ def get_content(channel_id):
         #Compute the percentage for each answers
         ratio_votes = compute_ratio_votes(current_question_entry["answers"], current_question_entry["totalVotes"])
 
-    if must_update_json:
+    if must_write_json:
         with open('./plugins/survey/survey_questions.json', 'w') as file_to_write:
             json.dump(saved_data, file_to_write, indent=4)
 
@@ -163,22 +153,35 @@ def find_question_entry(json_data, channel_id):
     return None
 
 def is_json_up_to_date(config_answers, saved_answers):
+    """ Check if the .json file and the configuration are coherent with one another """
     #config_answers is a list of strings
     #saved_answers is a list of dictionary with a key "answer" and a key "votes"
     if not len(config_answers) == len(saved_answers):
         return False
-    else:
-        if are_answers_updated(config_answers, saved_answers):
-            return False
+    elif are_answers_updated(config_answers, saved_answers):
+        return False
     return True
 
 def are_answers_updated(config_answers, saved_answers):
+    """ Check if all the saved answers are the answers stored in the configuration """
     #config_answers is a list of strings
     #saved_answers is a list of dictionary with a key "answer" and a key "votes"
     for saved_answer in saved_answers:
         if saved_answer["answer"] not in config_answers:
             return True
     return False
+
+def update_question(current_question_entry, new_question, new_answers):
+    """ Change the information contained in @current_question_entry to what's inside @new_question and @new_answers """
+    current_question_entry["question"] = new_question
+    current_question_entry["totalVotes"] = 0
+    updated_answers = []
+    for answer in new_answers:
+        updated_answers.append({
+            "answer": answer,
+            "votes": 0
+        })
+    current_question_entry["answers"] = updated_answers
 
 def compute_ratio_votes(saved_answers, total_nb_votes):
     """ Compute the percentage of answer for each answer """
