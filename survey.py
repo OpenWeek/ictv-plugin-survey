@@ -58,11 +58,14 @@ def get_content(channel_id):
         saved_data = {
             "questions": [create_new_question_entry(channel_id, question, answers)]
         }
-        percent_votes = [None]*len(answers)
 
-        print(saved_data)
+        percent_votes = [None]*len(answers)
         current_question_entry = saved_data["questions"][-1]
     else:
+        #Check that the .json file is valid
+        if not is_json_valid(saved_data):
+            raise SyntaxError("The JSON file of the ICTV survey has an invalid syntax.")
+
         current_question_entry = find_question_entry(saved_data, channel_id)
         if current_question_entry != None:
             #Check if the .json is up-to-date with the configuration
@@ -97,6 +100,33 @@ def get_content(channel_id):
     towrite.close()
 
     return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current_question_entry["id"])]
+
+def is_json_valid(json_data):
+    """ Check if the .json file contains valid syntax for a survey """
+    try:
+        if json_data == None:
+            return False
+        if json_data["questions"] == None:
+            return False
+        for question in json_data["questions"]:
+            if question["question"] == None:
+                return False
+            if question["channel"] == None:
+                return False
+            if question["id"] == None:
+                return False
+            if question["totalVotes"] == None:
+                return False
+            if question["answers"] == None:
+                return False
+            for answer in question["answers"]:
+                if answer["answer"] == None:
+                    return False
+                if answer["answer"] == None:
+                    return False
+        return True
+    except (TypeError, KeyError):
+        return False
 
 def create_new_question_entry(channel_id, question, answers):
     """ Creates a new entry for a question in the .json file (with id=1) and returns it """
