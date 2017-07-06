@@ -49,29 +49,15 @@ def get_content(channel_id):
         return []
 
     #For the .json
-    current = {
-        "id": 1,
-        "channel" : channel_id,
-        "question": question,
-        "totalVotes":0,
-        "answers" : []
-    }
-
-    for e in answers:
-        curr = {
-            "answer": e,
-            "votes": 0
-        }
-
-        current["answers"].append(curr)
     try:
         data_file = open('./plugins/survey/survey_questions.json', 'r')
         data = json.load(data_file)
         data_file.close()
     except:
         data = {
-            "questions": [current]
+            "questions": [create_new_question_entry(channel_id, question, answers)]
         }
+        percent_votes = [None]*len(answers)
     else:
         found = False
         current_index = 0
@@ -86,8 +72,7 @@ def get_content(channel_id):
                 else:
                     if are_answers_updated(answers, data["questions"][current_index]["answers"]):
                         updated = True
-                print(same_nb_answers)
-                print(updated)
+
                 if updated:
                     data["questions"][current_index]["question"] = question
                     data["questions"][current_index]["totalVotes"] = 0
@@ -103,14 +88,31 @@ def get_content(channel_id):
 
                 break
             current_index += 1
+
         if not found :
-           if len(data["questions"]) == 0:
-               current["id"] = 1
-           else:
-               next_id = data["questions"][-1]["id"]
-               current["id"] = next_id + 1
-           data["questions"].append(current)
-           current_index = len(data["questions"])-1
+            new_question_entry = create_new_question_entry(channel_id, question, answers)
+            if len(data["questions"]) == 0:
+                new_question_entry["id"] = 1
+            else:
+                next_id = data["questions"][-1]["id"]
+                new_question_entry["id"] = next_id + 1
+            data["questions"].append(new_question_entry)
+            current_index = len(data["questions"])-1
+
+        #Compute the percentage for each answers
+        i = 0
+        nbVotesForEachAnswer = [None]*len(data["questions"][current_index]["answers"])
+        for answer in data["questions"][current_index]["answers"]:
+            nbVotesForEachAnswer[i] = answer["votes"]
+            i += 1
+
+        percent_votes = [None]*len(data["questions"][current_index]["answers"])
+        totalNbVotes = data["questions"][current_index]["totalVotes"]
+        if totalNbVotes != 0:
+            i = 0
+            for currentNbVotes in nbVotesForEachAnswer:
+                percent_votes[i] = (currentNbVotes/totalNbVotes) * 100
+                i += 1
 
     towrite = open('./plugins/survey/survey_questions.json', 'w')
     # TODO : make flexible
@@ -118,22 +120,25 @@ def get_content(channel_id):
     json.dump(data, towrite, indent=4)
     towrite.close()
 
-    #Compute the percentage for each answers
-    i = 0
-    nbVotesForEachAnswer = [None]*len(data["questions"][current_index]["answers"])
-    for answer in data["questions"][current_index]["answers"]:
-        nbVotesForEachAnswer[i] = answer["votes"]
-        i += 1
+    return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, data["questions"][current_index]["id"])]
 
-    percent_votes = [None]*len(data["questions"][current_index]["answers"])
-    totalNbVotes = data["questions"][current_index]["totalVotes"]
-    if totalNbVotes != 0:
-        i = 0
-        for currentNbVotes in nbVotesForEachAnswer:
-            percent_votes[i] = (currentNbVotes/totalNbVotes) * 100
-            i += 1
+def create_new_question_entry(channel_id, question, answers):
+    """ Creates a new entry for a question in the .json file (with id=1) and returns it """
+    new_question_entry = {
+        "id": 1,
+        "channel" : channel_id,
+        "question": question,
+        "totalVotes":0,
+        "answers" : []
+    }
 
-    return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current["id"])]
+    for answer in answers:
+        answer_entry = {
+            "answer": answer,
+            "votes": 0
+        }
+
+        new_question_entry["answers"].append(answer_entry)
 
 def are_answers_updated(config_answers, saved_answers):
     #config_answers is a list of strings
