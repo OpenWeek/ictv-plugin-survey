@@ -51,9 +51,8 @@ def get_content(channel_id):
     #For the .json
     current_question_entry = None
     try:
-        data_file = open('./plugins/survey/survey_questions.json', 'r')
-        saved_data = json.load(data_file)
-        data_file.close()
+        with open('./plugins/survey/survey_questions.json', 'r') as data_file:
+            saved_data = json.load(data_file)
     except:
         saved_data = {
             "questions": [create_new_question_entry(channel_id, question, answers)]
@@ -93,11 +92,8 @@ def get_content(channel_id):
         #Compute the percentage for each answers
         percent_votes = compute_percent_votes(current_question_entry["answers"], current_question_entry["totalVotes"])
 
-    towrite = open('./plugins/survey/survey_questions.json', 'w')
-    # TODO : make flexible
-
-    json.dump(saved_data, towrite, indent=4)
-    towrite.close()
+    with open('./plugins/survey/survey_questions.json', 'w') as towrite: # TODO : make flexible
+        json.dump(saved_data, towrite, indent=4)
 
     return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current_question_entry["id"])]
 
@@ -179,13 +175,11 @@ def are_answers_updated(config_answers, saved_answers):
 def compute_percent_votes(saved_answers, total_nb_votes):
     """ Compute the percentage of answer for each answer """
     if total_nb_votes == 0:
-        return [None]*len(saved_answers)
+        return None
 
-    i = 0
-    percent_votes = [None]*len(saved_answers)
+    percent_votes = []
     for answer in saved_answers:
-        percent_votes[i] = (answer["votes"]/total_nb_votes) * 100
-        i += 1
+        percent_votes.append((answer["votes"]/total_nb_votes) * 100)
 
     return percent_votes
 
@@ -218,7 +212,7 @@ class SurveySlide(PluginSlide):
             self._content['show-results'] = False
             self._content['no-votes'] = None #no information about this
         else:
-            if None in percent_votes:
+            if percent_votes == None:
                 self._content['show-results'] = False
                 self._content['no-votes'] = True
             else:
