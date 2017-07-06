@@ -37,9 +37,9 @@ def get_app(ictv_app):
 
     urls = (
         'index', 'ictv.plugins.survey.app.IndexPage',
-        'result/(.+)/(.+)', 'ictv.plugins.survey.app.Result',
+        'validate/(.+)/(.+)', 'ictv.plugins.survey.app.Result',
         'stat/(.+)/(.+)', 'ictv.plugins.survey.app.Stat',
-        'cancel/(.+)', 'ictv.plugins.survey.app.Cancel'
+        'modify/(.+)', 'ictv.plugins.survey.app.Cancel'
 
     )
 
@@ -89,7 +89,7 @@ class Result(SurveyPage):
                             answerTxt = el["answer"]
                         i += 1
         url_add = web.ctx.homedomain+'/channels/'+str(channel_id)+'/stat/'+question+'/'+answer
-        url_cancel = web.ctx.homedomain + '/channels/' + str(channel_id) + '/cancel/' + question
+        url_cancel = web.ctx.homedomain + '/channels/' + str(channel_id) + '/modify/' + question
         return self.renderer.template_reponse(answer=answerTxt, question=questionTxt, url_add=url_add, url_cancel = url_cancel)  # + url stat
 
 
