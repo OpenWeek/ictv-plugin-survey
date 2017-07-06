@@ -8,21 +8,44 @@ $def with (question)
     <title>title</title>
 
     <script src="/static/js/Chart.bundle.min.js"></script>
-
+    <style>
+        body {
+            font-family: Verdana, Geneva, sans-serif
+        }
+       .centre {
+            margin-left: auto;
+            margin-right: auto;
+            width: 300px;
+        }
+        .text {
+            text-align: center;
+        }
+        .question {
+            font-size: 27px;
+        }
+        canvas {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    </style>
   </head>
   <body>
     <!-- page content -->
     $ q = question["question"]
-    <div>
-        Résultat de la question : $q
-    </div>
-    <canvas id="myChart" style="height: 200; height: 200"></canvas>
-
-
-    $for a in question["answers"]
-        <div>
-            $a["answer"] : $a["votes"]
+    <div class="centre">
+        <div class="text">
+            Résultat de la question :<br>
+            <span class="question">$q </span>
         </div>
+        <canvas id="myChart"></canvas>
+
+        <div class="text">
+            $ txt ="Nombre total de vote : "+ str(question["totalVotes"]) if question["totalVotes"]<= 1 else "Nombre total de votes : "+ str(question["totalVotes"])
+            $txt
+        </div>
+
+    </div>
+
 
     <script>
         var ctx = document.getElementById('myChart').getContext('2d');
