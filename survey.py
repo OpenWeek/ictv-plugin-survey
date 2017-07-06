@@ -49,91 +49,88 @@ def get_content(channel_id):
         return []
 
     #For the .json
-    current = {
-        "id": 1,
-        "channel" : channel_id,
-        "question": question,
-        "totalVotes":0,
-        "answers" : []
-    }
-
-    for e in answers:
-        curr = {
-            "answer": e,
-            "votes": 0
-        }
-
-        current["answers"].append(curr)
     try:
         data_file = open('./plugins/survey/survey_questions.json', 'r')
-        data = json.load(data_file)
+        saved_data = json.load(data_file)
         data_file.close()
     except:
-        data = {
-            "questions": [current]
+        saved_data = {
+            "questions": [create_new_question_entry(channel_id, question, answers)]
         }
+        percent_votes = [None]*len(answers)
     else:
-        found = False
-        current_index = 0
-        for e in data["questions"]:
-            if e["channel"] == channel_id:
-                found = True
-                #Check if the .json is up-to-date with the configuration
-                same_nb_answers = (len(answers) == len(data["questions"][current_index]["answers"]))
-                updated = False
-                if not same_nb_answers:
-                    updated = True
-                else:
-                    if are_answers_updated(answers, data["questions"][current_index]["answers"]):
-                        updated = True
-                print(same_nb_answers)
-                print(updated)
-                if updated:
-                    data["questions"][current_index]["question"] = question
-                    data["questions"][current_index]["totalVotes"] = 0
-                    updated_answers = [None]*len(answers)
-                    i = 0
-                    for answer in answers:
-                        updated_answers[i] = {
-                            "answer": answer,
-                            "votes": 0
-                        }
-                        i += 1
-                    data["questions"][current_index]["answers"] = updated_answers
+        current_question_entry = find_question_entry(saved_data, channel_id)
+        if current_question_entry != None:
+            #Check if the .json is up-to-date with the configuration
+            if not is_json_up_to_date(answers, current_question_entry["answers"]):
+                current_question_entry["question"] = question
+                current_question_entry["totalVotes"] = 0
+                updated_answers = [None]*len(answers)
+                i = 0
+                for answer in answers:
+                    updated_answers[i] = {
+                        "answer": answer,
+                        "votes": 0
+                    }
+                    i += 1
+                current_question_entry["answers"] = updated_answers
+        else: #the question was not contained in the .json file
+            new_question_entry = create_new_question_entry(channel_id, question, answers)
+            if len(saved_data["questions"]) == 0:
+                new_question_entry["id"] = 1
+            else:
+                new_question_entry["id"] = saved_data["questions"][-1]["id"] + 1
+            saved_data["questions"].append(new_question_entry)
+            current_index = len(saved_data["questions"])-1
 
-                break
-            current_index += 1
-        if not found :
-           if len(data["questions"]) == 0:
-               current["id"] = 1
-           else:
-               next_id = data["questions"][-1]["id"]
-               current["id"] = next_id + 1
-           data["questions"].append(current)
-           current_index = len(data["questions"])-1
+        #Compute the percentage for each answers
+        percent_votes = compute_percent_votes(current_question_entry["answers"], current_question_entry["totalVotes"])
 
     towrite = open('./plugins/survey/survey_questions.json', 'w')
     # TODO : make flexible
 
-    json.dump(data, towrite, indent=4)
+    json.dump(saved_data, towrite, indent=4)
     towrite.close()
 
-    #Compute the percentage for each answers
-    i = 0
-    nbVotesForEachAnswer = [None]*len(data["questions"][current_index]["answers"])
-    for answer in data["questions"][current_index]["answers"]:
-        nbVotesForEachAnswer[i] = answer["votes"]
-        i += 1
+    return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current_question_entry["id"])]
 
-    percent_votes = [None]*len(data["questions"][current_index]["answers"])
-    totalNbVotes = data["questions"][current_index]["totalVotes"]
-    if totalNbVotes != 0:
-        i = 0
-        for currentNbVotes in nbVotesForEachAnswer:
-            percent_votes[i] = (currentNbVotes/totalNbVotes) * 100
-            i += 1
+def create_new_question_entry(channel_id, question, answers):
+    """ Creates a new entry for a question in the .json file (with id=1) and returns it """
+    new_question_entry = {
+    "id": 1,
+    "channel" : channel_id,
+    "question": question,
+    "totalVotes":0,
+    "answers" : []
+    }
 
-    return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current["id"])]
+    for answer in answers:
+        answer_entry = {
+        "answer": answer,
+        "votes": 0
+        }
+
+        new_question_entry["answers"].append(answer_entry)
+
+def find_question_entry(json_data, channel_id):
+    """
+        Find the question entry in the data of the .json file
+        Returns the dictionary that represents the question or @None if it wasn't found
+    """
+    for question in json_data["questions"]:
+        if question["channel"] == channel_id:
+            return question
+    return None
+
+def is_json_up_to_date(config_answers, saved_answers):
+    #config_answers is a list of strings
+    #saved_answers is a list of dictionary with a key "answer" and a key "votes"
+    if not len(config_answers) == len(saved_answers):
+        return False
+    else:
+        if are_answers_updated(config_answers, saved_answers):
+            return False
+    return True
 
 def are_answers_updated(config_answers, saved_answers):
     #config_answers is a list of strings
@@ -142,6 +139,19 @@ def are_answers_updated(config_answers, saved_answers):
         if saved_answer["answer"] not in config_answers:
             return True
     return False
+
+def compute_percent_votes(saved_answers, total_nb_votes):
+    """ Compute the percentage of answer for each answer """
+    if total_nb_votes == 0:
+        return [None]*len(saved_answers)
+
+    i = 0
+    percent_votes = [None]*len(saved_answers)
+    for answer in saved_answers:
+        percent_votes[i] = (answer["votes"]/total_nb_votes) * 100
+        i += 1
+
+    return percent_votes
 
 class SurveyCapsule(PluginCapsule):
     def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
