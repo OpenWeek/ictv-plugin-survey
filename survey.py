@@ -59,20 +59,10 @@ def get_content(channel_id):
         }
         percent_votes = [None]*len(answers)
     else:
-        found = False
         current_question_entry = find_question_entry(data, channel_id)
         if current_question_entry != None:
-            found = True
             #Check if the .json is up-to-date with the configuration
-            same_nb_answers = (len(answers) == len(current_question_entry["answers"]))
-            updated = False
-            if not same_nb_answers:
-                updated = True
-            else:
-                if are_answers_updated(answers, current_question_entry["answers"]):
-                    updated = True
-
-            if updated:
+            if not is_json_up_to_date(answers, current_question_entry["answers"]):
                 current_question_entry["question"] = question
                 current_question_entry["totalVotes"] = 0
                 updated_answers = [None]*len(answers)
@@ -117,6 +107,24 @@ def get_content(channel_id):
 
     return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current_question_entry["id"])]
 
+def create_new_question_entry(channel_id, question, answers):
+    """ Creates a new entry for a question in the .json file (with id=1) and returns it """
+    new_question_entry = {
+    "id": 1,
+    "channel" : channel_id,
+    "question": question,
+    "totalVotes":0,
+    "answers" : []
+    }
+
+    for answer in answers:
+        answer_entry = {
+        "answer": answer,
+        "votes": 0
+        }
+
+        new_question_entry["answers"].append(answer_entry)
+
 def find_question_entry(json_data, channel_id):
     """
         Find the question entry in the data of the .json file
@@ -127,23 +135,15 @@ def find_question_entry(json_data, channel_id):
             return question
     return None
 
-def create_new_question_entry(channel_id, question, answers):
-    """ Creates a new entry for a question in the .json file (with id=1) and returns it """
-    new_question_entry = {
-        "id": 1,
-        "channel" : channel_id,
-        "question": question,
-        "totalVotes":0,
-        "answers" : []
-    }
-
-    for answer in answers:
-        answer_entry = {
-            "answer": answer,
-            "votes": 0
-        }
-
-        new_question_entry["answers"].append(answer_entry)
+def is_json_up_to_date(config_answers, saved_answers):
+    #config_answers is a list of strings
+    #saved_answers is a list of dictionary with a key "answer" and a key "votes"
+    if not len(config_answers) == len(saved_answers):
+        return False
+    else:
+        if are_answers_updated(config_answers, saved_answers):
+            return False
+    return True
 
 def are_answers_updated(config_answers, saved_answers):
     #config_answers is a list of strings
