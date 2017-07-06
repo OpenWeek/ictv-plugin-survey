@@ -35,7 +35,7 @@ from pprint import pprint
 
 
 def get_content(channel_id):
-    #from the configuration file
+    #From the configuration file
     channel = Channel.get(channel_id)
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
     logger = get_logger('survey', channel)
@@ -49,6 +49,7 @@ def get_content(channel_id):
         return []
 
     #For the .json
+    current_question_entry = None
     try:
         data_file = open('./plugins/survey/survey_questions.json', 'r')
         saved_data = json.load(data_file)
@@ -58,6 +59,9 @@ def get_content(channel_id):
             "questions": [create_new_question_entry(channel_id, question, answers)]
         }
         percent_votes = [None]*len(answers)
+
+        print(saved_data)
+        current_question_entry = saved_data["questions"][-1]
     else:
         current_question_entry = find_question_entry(saved_data, channel_id)
         if current_question_entry != None:
@@ -81,7 +85,7 @@ def get_content(channel_id):
             else:
                 new_question_entry["id"] = saved_data["questions"][-1]["id"] + 1
             saved_data["questions"].append(new_question_entry)
-            current_index = len(saved_data["questions"])-1
+            current_question_entry = new_question_entry
 
         #Compute the percentage for each answers
         percent_votes = compute_percent_votes(current_question_entry["answers"], current_question_entry["totalVotes"])
@@ -111,6 +115,8 @@ def create_new_question_entry(channel_id, question, answers):
         }
 
         new_question_entry["answers"].append(answer_entry)
+
+    return new_question_entry
 
 def find_question_entry(json_data, channel_id):
     """
