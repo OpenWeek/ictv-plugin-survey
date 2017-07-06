@@ -53,10 +53,12 @@ def get_content(channel_id):
 
     #For the .json
     current_question_entry = None
+    must_update_json = False
     try:
         with open('./plugins/survey/survey_questions.json', 'r') as data_file:
             saved_data = json.load(data_file)
     except:
+        must_update_json = True
         saved_data = {
             "questions": [create_new_question_entry(channel_id, question, answers)]
         }
@@ -72,6 +74,7 @@ def get_content(channel_id):
         if current_question_entry != None:
             #Check if the .json is up-to-date with the configuration
             if not is_json_up_to_date(answers, current_question_entry["answers"]):
+                must_update_json = True
                 current_question_entry["question"] = question
                 current_question_entry["totalVotes"] = 0
                 updated_answers = [None]*len(answers)
@@ -84,6 +87,7 @@ def get_content(channel_id):
                     i += 1
                 current_question_entry["answers"] = updated_answers
         else: #the question was not contained in the .json file
+            must_update_json = True
             new_question_entry = create_new_question_entry(channel_id, question, answers)
             if len(saved_data["questions"]) == 0:
                 new_question_entry["id"] = 1
@@ -95,8 +99,9 @@ def get_content(channel_id):
         #Compute the percentage for each answers
         ratio_votes = compute_ratio_votes(current_question_entry["answers"], current_question_entry["totalVotes"])
 
-    with open('./plugins/survey/survey_questions.json', 'w') as towrite: # TODO : make flexible
-        json.dump(saved_data, towrite, indent=4)
+    if must_update_json:
+        with open('./plugins/survey/survey_questions.json', 'w') as file_to_write:
+            json.dump(saved_data, file_to_write, indent=4)
 
     return [SurveyCapsule(question, author, answers, ratio_votes, secret, channel_id, current_question_entry["id"])]
 
@@ -233,9 +238,6 @@ class SurveySlide(PluginSlide):
         return self._content
 
     def get_template(self) -> str:
-        #if self._nb_answers == 1:
-        #    return 'template-survey-1-answer'
-        #return 'template-survey-'+str(self._nb_answers)+'-answers'
         return 'template-survey'
 
     def __repr__(self):
