@@ -14,3 +14,17 @@ WARNING : 2017-07-04 12:17:49,125 [Channel Test (3)] - One slide had 1 non compl
 WARNING : 2017-07-04 12:17:49,125 [Channel Test (3)] - Id title-1 from template template-survey-1-answer has a length of 30 but only 2 characters are permitted. It's text was "aazertyuiopghj ertyuiopertyuio"
 WARNING : 2017-07-04 14:54:38,297 [Channel Test (5)] - One slide had 1 non complying field(s). It' content was the following:
 WARNING : 2017-07-04 14:54:38,299 [Channel Test (5)] - Id text-1 from template template-survey-4-answers has a length of 642 but only 640 characters are permitted. It's text was "wwwwww wwwwwwwww wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+WARNING : 2017-07-06 16:44:40,039 [Channel Test (6)] - Some parameters were misconfigured
+Traceback (most recent call last):
+  File "/home/simon/Bureau/OpenWeek 2017/ictv-v2/ictv/plugin_manager/plugin_manager.py", line 84, in get_plugin_content
+    content = plugin.get_content(channel.id)
+  File "/home/simon/Bureau/OpenWeek 2017/ictv-v2/ictv/plugins/survey/survey.py", line 52, in get_content
+    raise MisconfiguredParameters('answers', answers, "There shouldn't be more than 5 answers provided.")
+ictv.plugin_manager.plugin_utils.MisconfiguredParameters: Parameter answers with value ['Oui', 'Non', 'Peut-être', 'a', 'b', 'c'] was reported as faulty. Additional message: There shouldn't be more than 5 answers provided.
+WARNING : 2017-07-06 16:44:50,515 [Channel Test (6)] - Some parameters were misconfigured
+Traceback (most recent call last):
+  File "/home/simon/Bureau/OpenWeek 2017/ictv-v2/ictv/plugin_manager/plugin_manager.py", line 84, in get_plugin_content
+    content = plugin.get_content(channel.id)
+  File "/home/simon/Bureau/OpenWeek 2017/ictv-v2/ictv/plugins/survey/survey.py", line 52, in get_content
+    raise MisconfiguredParameters('answers', answers, "There shouldn't be more than 5 answers provided.")
+ictv.plugin_manager.plugin_utils.MisconfiguredParameters: Parameter answers with value ['Oui', 'Non', 'Peut-être', 'a', 'b', 'c'] was reported as faulty. Additional message: There shouldn't be more than 5 answers provided.

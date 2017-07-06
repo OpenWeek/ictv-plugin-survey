@@ -48,6 +48,9 @@ def get_content(channel_id):
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
 
+    if len(answers) > 5:
+        raise MisconfiguredParameters('answers', answers, "There shouldn't be more than 5 answers provided.")
+
     #For the .json
     current_question_entry = None
     try:
@@ -201,7 +204,10 @@ class SurveySlide(PluginSlide):
         self._duration = 10000000
         self._content = {'title-1': {'text': question}, 'text-0': {'text': author}}
 
-        self._content['nb-answers'] = len(answers)
+        if len(answers) <= 5:
+            self._content['nb-answers'] = len(answers)
+        else:
+            self._content['nb-answers'] = 5
         i = 1
         for answer in answers:
             self._content['text-'+str(i)] = {'text': answer}
