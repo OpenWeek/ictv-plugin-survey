@@ -1,10 +1,63 @@
 $def with (question)
 
-$ q = question["question"]
-<div>
-    Résultat de la question : $q
-</div>
-$for a in question["answers"]
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>title</title>
+
+    <script src="/static/js/Chart.bundle.min.js"></script>
+
+  </head>
+  <body>
+    <!-- page content -->
+    $ q = question["question"]
     <div>
-        $a["answer"] : $a["votes"]
+        Résultat de la question : $q
     </div>
+    <canvas id="myChart" style="height: 200; height: 200"></canvas>
+
+
+    $for a in question["answers"]
+        <div>
+            $a["answer"] : $a["votes"]
+        </div>
+
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'doughnut',
+
+            // The data for our dataset
+            data: {
+                datasets: [{
+                    data: [
+                        $for a in question["answers"]:
+                            $a["votes"] ,
+                        ],
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)',
+                                        'rgba(0, 99, 132, 0.2)',
+                                        'rgba(255, 99, 12, 0.2)']
+                }],
+
+                // These labels appear in the legend and in the tooltips when hovering different arcs
+                labels: [
+                    $for b in question["answers"]
+                            "$b["answer"]" ,
+                            $print(b["answer"])
+                ]
+            },
+
+            // Configuration options go here
+            options: {
+                responsive: false
+            }
+        });
+    </script>
+  </body>
+</html>
+
+
+
