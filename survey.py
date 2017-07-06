@@ -61,7 +61,7 @@ def get_content(channel_id):
             "questions": [create_new_question_entry(channel_id, question, answers)]
         }
 
-        percent_votes = [None]*len(answers)
+        ratio_votes = [None]*len(answers)
         current_question_entry = saved_data["questions"][-1]
     else:
         #Check that the .json file is valid
@@ -93,12 +93,12 @@ def get_content(channel_id):
             current_question_entry = new_question_entry
 
         #Compute the percentage for each answers
-        percent_votes = compute_percent_votes(current_question_entry["answers"], current_question_entry["totalVotes"])
+        ratio_votes = compute_ratio_votes(current_question_entry["answers"], current_question_entry["totalVotes"])
 
     with open('./plugins/survey/survey_questions.json', 'w') as towrite: # TODO : make flexible
         json.dump(saved_data, towrite, indent=4)
 
-    return [SurveyCapsule(question, author, answers, percent_votes, secret, channel_id, current_question_entry["id"])]
+    return [SurveyCapsule(question, author, answers, ratio_votes, secret, channel_id, current_question_entry["id"])]
 
 def is_json_valid(json_data):
     """ Check if the .json file contains valid syntax for a survey """
@@ -175,20 +175,20 @@ def are_answers_updated(config_answers, saved_answers):
             return True
     return False
 
-def compute_percent_votes(saved_answers, total_nb_votes):
+def compute_ratio_votes(saved_answers, total_nb_votes):
     """ Compute the percentage of answer for each answer """
     if total_nb_votes == 0:
         return None
 
-    percent_votes = []
+    ratio_votes = []
     for answer in saved_answers:
-        percent_votes.append((answer["votes"]/total_nb_votes) * 100)
+        ratio_votes.append(answer["votes"]/total_nb_votes)
 
-    return percent_votes
+    return ratio_votes
 
 class SurveyCapsule(PluginCapsule):
-    def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
-        self._slides = [SurveySlide(question, author, answers, percent_votes, secret, channel_id, question_id)]
+    def __init__(self, question, author, answers, ratio_votes, secret, channel_id, question_id):
+        self._slides = [SurveySlide(question, author, answers, ratio_votes, secret, channel_id, question_id)]
 
     def get_slides(self):
         return self._slides
@@ -200,7 +200,7 @@ class SurveyCapsule(PluginCapsule):
         return str(self.__dict__)
 
 class SurveySlide(PluginSlide):
-    def __init__(self, question, author, answers, percent_votes, secret, channel_id, question_id):
+    def __init__(self, question, author, answers, ratio_votes, secret, channel_id, question_id):
         self._duration = 10000000
         self._content = {'title-1': {'text': question}, 'text-0': {'text': author}}
 
@@ -218,13 +218,13 @@ class SurveySlide(PluginSlide):
             self._content['show-results'] = False
             self._content['no-votes'] = None #no information about this
         else:
-            if percent_votes == None:
+            if ratio_votes == None:
                 self._content['show-results'] = False
                 self._content['no-votes'] = True
             else:
                 self._content['show-results'] = True
                 self._content['no-votes'] = False
-                self._content['percent-votes'] = percent_votes
+                self._content['ratio-votes'] = ratio_votes
 
     def get_duration(self):
         return self._duration
