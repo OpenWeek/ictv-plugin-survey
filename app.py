@@ -127,4 +127,21 @@ class Stat(SurveyPage):
 
 class Cancel(SurveyPage):
     def GET(self, id):
-            return "Test"
+        answers = []
+        channel_id = -1
+        try:
+            data_file = open('./plugins/survey/survey_questions.json', 'r')
+            data = json.load(data_file)
+            data_file.close()
+        except IOError:
+            print("IOError !")
+            traceback.print_exc()
+        else:
+            for e in data["questions"]:
+                if str(e["id"]) == str(id):
+                    questionTxt = e["question"]
+                    channel_id = e["channel"]
+                    for el in e["answers"]:
+                        answers.append(el["answer"])
+        url = web.ctx.homedomain + '/channels/' + str(channel_id) + '/validate/' + id + '/'
+        return self.renderer.template_modify(answers=answers, question=questionTxt, url=url)
