@@ -37,8 +37,9 @@ def get_app(ictv_app):
 
     urls = (
         'index', 'ictv.plugins.survey.app.IndexPage',
-        'result/(.+)/(.+)', 'ictv.plugins.survey.app.Result',
-        'stat/(.+)', 'ictv.plugins.survey.app.Stat'
+        'validate/(.+)/(.+)', 'ictv.plugins.survey.app.Result',
+        'stat/(.+)/(.+)', 'ictv.plugins.survey.app.Stat',
+        'modify/(.+)', 'ictv.plugins.survey.app.Cancel'
 
     )
 
@@ -73,35 +74,23 @@ class Result(SurveyPage):
             data_file = open('./plugins/survey/survey_questions.json', 'r')
             data = json.load(data_file)
             data_file.close()
-            to_write = open('./plugins/survey/survey_questions.json', 'w')
-            while True:
-                try:
-                    lock = fcntl.flock(to_write, fcntl.LOCK_EX)
-                    break
-                except IOError as e:
-                    if e.errno != errno.EAGAIN:
-                        raise
-                    else:
-                        time.sleep(0.1)
         except IOError:
             print("IOError !")
             traceback.print_exc()
+
         else:
             for e in data["questions"]:
                 if str(e["id"]) == str(question):
                     questionTxt = e["question"]
                     channel_id = e["channel"]
-                    e["totalVotes"] += 1
                     i = 1
                     for el in e["answers"]:
                         if str(i) == answer:
                             answerTxt = el["answer"]
-                            el["votes"] += 1
                         i += 1
-            json.dump(data, to_write, indent=4)
-            to_write.close()
-        url = web.ctx.homedomain+'/channels/'+str(channel_id)+'/stat/'+question
-        return self.renderer.template_reponse(answer=answerTxt, question=questionTxt, url=url)  # + url stat
+        url_add = web.ctx.homedomain+'/channels/'+str(channel_id)+'/stat/'+question+'/'+answer
+        url_cancel = web.ctx.homedomain + '/channels/' + str(channel_id) + '/modify/' + question
+        return self.renderer.template_reponse(answer=answerTxt, question=questionTxt, url_add=url_add, url_cancel = url_cancel)  # + url stat
 
 
 class IndexPage(SurveyPage):
@@ -109,15 +98,33 @@ class IndexPage(SurveyPage):
         return "Hello World !"
 
 class Stat(SurveyPage):
-    def GET(self, id):
+    def GET(self, id, answer):
         try:
             data_file = open('./plugins/survey/survey_questions.json', 'r')
             data = json.load(data_file)
+            data_file.close()
+            to_write = open('./plugins/survey/survey_questions.json', 'w')
         except IOError:
-            pass # retourner une page bateau
+            print("IOError !")
+            traceback.print_exc()
         else:
+            for e in data["questions"]:
+                if str(e["id"]) == str(id):
+                    e["totalVotes"] += 1
+                    i = 1
+                    for el in e["answers"]:
+                        if str(i) == answer:
+                            el["votes"] += 1
+                        i += 1
+            json.dump(data, to_write, indent=4)
+            to_write.close()
             for q in data["questions"]:
                 if str(q["id"]) == id:
                     return self.renderer.template_stat(q)
 
             return "Not found"
+
+
+class Cancel(SurveyPage):
+    def GET(self, id):
+            return "Test"
