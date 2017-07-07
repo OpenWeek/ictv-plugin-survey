@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 #
-#    This file is  written by Arnaud Gellens,Arthur van Stratum,
+#    This file was written by Arnaud Gellens, Arthur van Stratum,
 #    Céline Deknop, Charles-Henry Bertrand Van Ouytsel,
 #    Margerie Huet and Simon Gustin during the OpenWeek 2017 at
 #    Universite Catholique de Louvain.
-#    This software is licensed under the MIT License
+#    This software is licensed under the MIT License.
 
 
 import web
