@@ -136,8 +136,8 @@ def create_new_question_entry(channel_id, question, answers):
 
     for answer in answers:
         answer_entry = {
-        "answer": answer,
-        "votes": 0
+            "answer": answer,
+            "votes": 0
         }
 
         new_question_entry["answers"].append(answer_entry)
