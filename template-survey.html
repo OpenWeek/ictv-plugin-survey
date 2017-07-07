@@ -99,9 +99,14 @@ $var description: Question + answers (with qr code)
 
    $if slide:
       $if not slide['no-votes']:
-         <div id="total-nb-votes">
-            $:slide['total-nb-votes'] votes
-         </div>
+         $if slide['total-nb-votes'] == 1:
+            <div id="total-nb-votes">
+               $:slide['total-nb-votes'] vote
+            </div>
+         $else:
+            <div id="total-nb-votes">
+               $:slide['total-nb-votes'] votes
+            </div>
       $if slide['show-results']:
          <!-- Show the poll results -->
          <div class="stacked-bar-graph">
