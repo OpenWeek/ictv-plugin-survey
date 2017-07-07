@@ -39,6 +39,7 @@ def get_content(channel_id):
     channel = Channel.get(channel_id)
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
     logger = get_logger('survey', channel)
+    still_answerable = channel.get_config_param('answerable')
     question = channel.get_config_param('question')
     author = channel.get_config_param('author')
     answers = channel.get_config_param('answers')
@@ -61,15 +62,15 @@ def get_content(channel_id):
     except:
         must_write_json = True
         saved_data = {
-            "questions": [create_new_question_entry(channel_id, question, answers)]
+            'questions': [create_new_question_entry(channel_id, question, answers)]
         }
 
         ratio_votes = None
-        current_question_entry = saved_data["questions"][-1]
+        current_question_entry = saved_data['questions'][-1]
     else:
         #Check that the .json file is valid
         if not is_json_valid(saved_data):
-            raise SyntaxError("The JSON file of the ICTV survey has an invalid syntax.")
+            raise SyntaxError('The JSON file of the ICTV survey has an invalid syntax.')
 
         current_question_entry = find_question_entry(saved_data, channel_id)
         if current_question_entry != None:
@@ -95,7 +96,7 @@ def get_content(channel_id):
         with open('./plugins/survey/survey_questions.json', 'w') as file_to_write:
             json.dump(saved_data, file_to_write, indent=4)
 
-    return [SurveyCapsule(question, author, answers, ratio_votes, display_on_survey, channel_id, current_question_entry["id"])]
+    return [SurveyCapsule(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, current_question_entry["id"])]
 
 def is_json_valid(json_data):
     """ Check if the .json file contains valid syntax for a survey """
@@ -203,8 +204,8 @@ def compute_ratio_votes(saved_answers, total_nb_votes):
     return ratio_votes
 
 class SurveyCapsule(PluginCapsule):
-    def __init__(self, question, author, answers, ratio_votes, display_on_survey, channel_id, question_id):
-        self._slides = [SurveySlide(question, author, answers, ratio_votes, display_on_survey, channel_id, question_id)]
+    def __init__(self, still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, question_id):
+        self._slides = [SurveySlide(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, question_id)]
 
     def get_slides(self):
         return self._slides
@@ -216,9 +217,9 @@ class SurveyCapsule(PluginCapsule):
         return str(self.__dict__)
 
 class SurveySlide(PluginSlide):
-    def __init__(self, question, author, answers, ratio_votes, display_on_survey, channel_id, question_id):
+    def __init__(self, still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, question_id):
         self._duration = 10000000
-        self._content = {'title-1': {'text': question}, 'text-0': {'text': author}}
+        self._content = {'still-answerable': still_answerable, 'title-1': {'text': question}, 'text-0': {'text': author}}
 
         if len(answers) <= 5:
             self._content['nb-answers'] = len(answers)
@@ -230,6 +231,7 @@ class SurveySlide(PluginSlide):
             self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channel/'+str(channel_id)+'/validate/'+str(question_id)+'/'+str(i)}
             i += 1
 
+        self._content['total-nb-votes'] = total_nb_votes
         if display_on_survey:
             if ratio_votes == None: #currently 0 votes
                 self._content['show-results'] = False

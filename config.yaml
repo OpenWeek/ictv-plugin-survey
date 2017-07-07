@@ -2,31 +2,35 @@ plugin:
   webapp: yes
   static: yes
   description: |
-    Work in progress !
+    This plugin allows to display a survey question and letting surveyed people answer it using QR codes
   dependencies:
     - pyquery
 channels_params:
+  answerable:
+    name: 'The survey is still open to be answered. Display the QR codes.'
+    type: bool
+    default: yes
   question:
     name: 'Survey question'
     placeholder: 'Question'
     type: string
     default: 'Aimez-vous la pluie ?'
   author:
-     name: 'Signature'
-     placeholder: 'Signature'
-     type: string
-     default: 'Signé : ICTEAM'
+    name: 'Signature'
+    placeholder: 'Signature'
+    type: string
+    default: 'Signé : ICTEAM'
   answers:
-     name: 'Answers'
-     placeholder: 'Answer'
-     type: list[string]
-     default: ['Oui', 'Non']
-     add: 'Add answer (5 max.)'
+    name: 'Answers'
+    placeholder: 'Answer'
+    type: list[string]
+    default: ['Oui', 'Non']
+    add: 'Add answer (5 max.)'
   #Idée : laisser la possibilité d'entrer 4 réponses et si vide pas afficher
   display_on_survey:
-     name: 'Display poll results on the survey screen'
-     type: bool
-     default: yes
+    name: 'Display poll results on the survey screen'
+    type: bool
+    default: yes
   display_in_webapp:
     name: 'Display poll results in the webapp'
     type: bool
