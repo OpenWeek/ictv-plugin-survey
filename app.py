@@ -36,7 +36,11 @@ import fcntl
 import time
 from ictv import get_root_path
 from ictv.pages.utils import ICTVPage
+
 from ictv.plugin_manager.plugin_utils import ChannelGate
+
+import re
+
 
 
 def get_app(ictv_app):
@@ -75,35 +79,36 @@ class SurveyPage(ICTVPage):
 
 
 class Validate(SurveyPage):
-    def GET(self, question, answer):
-        questionTxt = "erreur: question inaccessible"
-        answerTxt = "erreur: réponse inexistante"
+    def GET(self, question_id, answer):
+        question_txt = None
+        answer_txt = None
         channel_id = -1
         try:
-            data_file = open('./plugins/survey/survey_questions.json', 'r')
-            data = json.load(data_file)
-            data_file.close()
+            with open('./plugins/survey/survey_questions.json', 'r') as data_file:
+                data = json.load(data_file)
         except IOError:
             print("IOError !")
             traceback.print_exc()
-
         else:
-            for e in data["questions"]:
-                if str(e["id"]) == str(question):
-                    questionTxt = e["question"]
-                    channel_id = e["channel"]
-                    i = 1
-                    for el in e["answers"]:
-                        if str(i) == answer:
-                            answerTxt = el["answer"]
-                        i += 1
-        url_add = web.ctx.homedomain+'/channels/'+str(channel_id)+'/stat/'+question+'/'+answer
-        url_cancel = web.ctx.homedomain + '/channels/' + str(channel_id) + '/modify/' + question
-        return self.renderer.template_reponse(answer=answerTxt, question=questionTxt, url_add=url_add, url_cancel = url_cancel)  # + url stat
+            channel_id = get_channel_id_from_url(web.ctx.homepath)
+            question_entry = get_question_entry(data, channel_id, question_id)
+            question_txt = question_entry['question']
+            i = 1
+            for current_answer in question_entry['answers']:
+                if str(i) == answer:
+                    answer_txt = current_answer['answer']
+                i += 1
 
+        url_add = web.ctx.homedomain+'/channels/'+str(channel_id)+'/stat/'+question_id+'/'+answer
+        url_cancel = web.ctx.homedomain + '/channels/' + str(channel_id) + '/modify/' + question_id
+
+        if question_txt == None or answer_txt == None:
+            raise KeyError("The survey question or the answers to the question couldn't be found in the JSON file.")
+
+        return self.renderer.template_reponse(answer=answer_txt, question=question_txt, url_add=url_add, url_cancel = url_cancel)  # + url stat
 
 class IndexPage(SurveyPage):
-    @ChannelGate.contributor
+    #@ChannelGate.contributor
     def GET(self, download=None, channel=None):
         c_tmp = re.findall(r'\d+', web.ctx.homepath)
         c = str(c_tmp[0])
@@ -142,59 +147,68 @@ class IndexPage(SurveyPage):
             return self.renderer.template_download(url=web.ctx.homedomain+web.ctx.homepath+"index/"+name_files)
 
 class Stat(SurveyPage):
-    def GET(self, id, answer=None):
+    def GET(self, question_id, answer=None):
         if answer != None:
-            web.redirect(str(web.ctx.homedomain)+str(web.ctx.homepath) + "stat/" + str(id))
+            web.redirect(str(web.ctx.homedomain)+str(web.ctx.homepath) + "stat/" + str(question_id))
         try:
-            data_file = open('./plugins/survey/survey_questions.json', 'r')
-            data = json.load(data_file)
-            data_file.close()
-            to_write = open('./plugins/survey/survey_questions.json', 'w')
+            with open('./plugins/survey/survey_questions.json', 'r') as data_file:
+                data = json.load(data_file)
         except IOError:
             print("IOError !")
             traceback.print_exc()
         else:
-            for e in data["questions"]:
-                if str(e["id"]) == str(id):
-                    hash = hashlib.md5(("un peu de texte non previsible" + str(e["channel"]) + str(id)).encode('utf-8')).hexdigest()
-                    #print("cookies: "+str(web.cookies().get('webpy_session_id')))
-                    if not web.cookies().get(hash):
-                        i = 1
-                        for el in e["answers"]:
-                            if str(i) == answer:
-                                el["votes"] += 1
-                                #set cookies
-                                web.setcookie(hash,1, path=web.ctx.homepath)
-                                break
-                            i += 1
-                    else:
-                        print("cookie recognized")
-            json.dump(data, to_write, indent=4)
-            to_write.close()
-            for q in data["questions"]:
-                if str(q["id"]) == id:
-                    return self.renderer.template_stat(q)
+            channel_id = get_channel_id_from_url(web.ctx.homepath)
+            question_entry = get_question_entry(data, channel_id, question_id)
 
-            return "Not found"
+            if question_entry != None:
+                hash = hashlib.md5(("un peu de texte non previsible" + str(channel_id) + str(question_id)).encode('utf-8')).hexdigest()
+                #print("cookies: "+str(web.cookies().get('webpy_session_id')))
+                if not web.cookies().get(hash):
+                    i = 1
+                    for current_answer in question_entry["answers"]:
+                        if str(i) == answer:
+                            current_answer["votes"] += 1
+                            #set cookies
+                            web.setcookie(hash,1, path=web.ctx.homepath)
+                            break
+                        i += 1
+                else:
+                    print("cookie recognized")
 
+                with open('./plugins/survey/survey_questions.json', 'w') as to_write:
+                    json.dump(data, to_write, indent=4)
+
+                return self.renderer.template_stat(question_entry)
+            else:
+                return "Not found"
 
 class Modify(SurveyPage):
-    def GET(self, id):
+    def GET(self, question_id):
         answers = []
-        channel_id = -1
+        channel_id = get_channel_id_from_url(web.ctx.homepath)
         try:
-            data_file = open('./plugins/survey/survey_questions.json', 'r')
-            data = json.load(data_file)
-            data_file.close()
+            with open('./plugins/survey/survey_questions.json', 'r') as data_file:
+                data = json.load(data_file)
         except IOError:
             print("IOError !")
             traceback.print_exc()
         else:
-            for e in data["questions"]:
-                if str(e["id"]) == str(id):
-                    questionTxt = e["question"]
-                    channel_id = e["channel"]
-                    for el in e["answers"]:
-                        answers.append(el["answer"])
-        url = web.ctx.homedomain + '/channels/' + str(channel_id) + '/validate/' + id + '/'
-        return self.renderer.template_modify(answers=answers, question=questionTxt, url=url)
+            question_entry = get_question_entry(data, channel_id, question_id)
+            if question_entry != None:
+                question_txt = question_entry['question']
+                for current_answer in question_entry['answers']:
+                    answers.append(current_answer["answer"])
+            else:
+                raise KeyError("The question with this ID(%d) is not contained in the JSON file." % quesion_id)
+
+        url = web.ctx.homedomain + '/channels/' + str(channel_id) + '/validate/' + question_id + '/'
+        return self.renderer.template_modify(answers=answers, question=question_txt, url=url)
+
+def get_channel_id_from_url(url):
+    return re.findall(r'\d+', url)[0]
+
+def get_question_entry(json_data, channel_id, question_id):
+    channel_entry = json_data.get(str(channel_id), None)
+    if channel_entry == None:
+        return None
+    return channel_entry.get(str(question_id), None)

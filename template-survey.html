@@ -21,6 +21,12 @@ $var description: Question + answers (with qr code)
       text-align: center;
       word-wrap: break-word;
    }
+   #results-title {
+      margin-bottom: 1%
+   }
+   #total-nb-votes {
+      margin-bottom: 1%
+   }
    .stacked-bar-graph {
       width: 100%;
       height: 3%;
@@ -72,28 +78,37 @@ $var description: Question + answers (with qr code)
    </div>
 
    $if slide:
-      <div id="answers">
-         $ i = 1
-         $while i <= slide['nb-answers']:
-            <div class="answer" style="order: $i">
-               <div class="qr">
-                  $:img(content=slide, style="max-width: 200px; margin: 1%", number=i, editor_type="image", editor_placeholder="Choisir l'image", editor_label="Fichier image", editor_default="michelfra.gif", editor_order="1")
+      $if slide["still-answerable"]:
+         <div id="answers">
+            $ i = 1
+            $while i <= slide['nb-answers']:
+               <div class="answer" style="order: $i">
+                  <div class="qr">
+                     $:img(content=slide, style="max-width: 200px; margin: 1%", number=i, editor_type="image", editor_placeholder="Choisir l'image", editor_label="Fichier image", editor_default="michelfra.gif", editor_order="1")
+                  </div>
+                  <div class="text-answer">
+                     $:text(content=slide, style="max-width: 200px", number=i, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
+                  </div>
                </div>
-               <div class="text-answer">
-                  $:text(content=slide, style="max-width: 200px", number=i, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
-               </div>
-            </div>
-            $ i += 1
-      </div>
+               $ i += 1
+         </div>
+      $else:
+         <h2 id="results-title">
+            Résultats du sondage
+         </h2>
 
    $if slide:
+      $if not slide['no-votes']:
+         <div id="total-nb-votes">
+            $:slide['total-nb-votes'] votes
+         </div>
       $if slide['show-results']:
          <!-- Show the poll results -->
          <div class="stacked-bar-graph">
             $ i = 1
             $while i <= slide['nb-answers']:
                $if slide['ratio-votes'][i-1] != 0:
-                  $ width = slide['ratio-votes'][i-1]*100
+                  $ width = slide['ratio-votes'][i-1]*98 #We multiply by 98 instead of 100 to prevent display problem when one of the percentages are too close to 100%
                   <span style="width:$:width%" class="bar-$i">
                      $:text(content=slide, style="max-width: 200px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;", number=i, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
                   </span>

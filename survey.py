@@ -39,6 +39,7 @@ def get_content(channel_id):
     channel = Channel.get(channel_id)
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
     logger = get_logger('survey', channel)
+    still_answerable = channel.get_config_param('answerable')
     question = channel.get_config_param('question')
     author = channel.get_config_param('author')
     answers = channel.get_config_param('answers')
@@ -61,80 +62,80 @@ def get_content(channel_id):
     except:
         must_write_json = True
         saved_data = {
-            "questions": [create_new_question_entry(channel_id, question, answers)]
+            str(channel_id): {
+                '1': create_new_question_entry(question, answers)
+            }
         }
 
         ratio_votes = None
-        current_question_entry = saved_data["questions"][-1]
+        current_question_entry = saved_data[str(channel_id)]['1']
     else:
         #Check that the .json file is valid
         if not is_json_valid(saved_data):
-            raise SyntaxError("The JSON file of the ICTV survey has an invalid syntax.")
+            raise SyntaxError('The JSON file of the ICTV survey has an invalid syntax.')
 
         current_question_entry = find_question_entry(saved_data, channel_id)
         if current_question_entry != None:
             #Check if the .json is up-to-date with the configuration
-            if not is_json_up_to_date(answers, current_question_entry["answers"]):
+            if not is_json_up_to_date(current_question_entry, question, answers):
                 must_write_json = True
-                update_question(current_question_entry, question, answers)
+                update_question(current_question_entry, question)
+                if are_answers_updated(answers, current_question_entry['answers']):
+                    update_answers(current_question_entry, answers) #update and reset answers
             total_nb_votes = count_total_nb_votes(current_question_entry)
         else: #the question was not contained in the .json file
             must_write_json = True
-            new_question_entry = create_new_question_entry(channel_id, question, answers)
-            if len(saved_data["questions"]) == 0:
-                new_question_entry["id"] = 1
-            else:
-                new_question_entry["id"] = saved_data["questions"][-1]["id"] + 1
-            saved_data["questions"].append(new_question_entry)
+            new_question_entry = create_new_question_entry(question, answers)
+            question_id = 1
+            if len(saved_data[str(channel_id)]) != 0:
+                question_id = get_greatest_question_id(saved_data[str(channel_id)]) + 1
+            saved_data[str(channel_id)][str(question_id)] = new_question_entry
             current_question_entry = new_question_entry
 
         #Compute the percentage for each answers
-        ratio_votes = compute_ratio_votes(current_question_entry["answers"], total_nb_votes)
+        ratio_votes = compute_ratio_votes(current_question_entry['answers'], total_nb_votes)
 
     if must_write_json:
         with open('./plugins/survey/survey_questions.json', 'w') as file_to_write:
             json.dump(saved_data, file_to_write, indent=4)
 
-    return [SurveyCapsule(question, author, answers, ratio_votes, display_on_survey, channel_id, current_question_entry["id"])]
+    return [SurveyCapsule(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, 1)]
 
 def is_json_valid(json_data):
     """ Check if the .json file contains valid syntax for a survey """
     try:
         if json_data == None:
             return False
-        if json_data["questions"] == None:
-            return False
-        for question in json_data["questions"]:
-            if question["question"] == None:
+        for channel_key in json_data:
+            if json_data[channel_key] == None:
                 return False
-            if question["channel"] == None:
-                return False
-            if question["id"] == None:
-                return False
-            if question["answers"] == None:
-                return False
-            for answer in question["answers"]:
-                if answer["answer"] == None:
+            for question_key in json_data[channel_key]:
+                if json_data[channel_key][question_key] == None:
                     return False
-                if answer["answer"] == None:
+                if json_data[channel_key][question_key]['question'] == None:
                     return False
+                if json_data[channel_key][question_key]['answers'] == None:
+                    return False
+                for answer in json_data[channel_key][question_key]['answers']:
+                    if answer['answer'] == None:
+                        return False
+                    if answer['votes'] == None:
+                        return False
         return True
     except (TypeError, KeyError):
         return False
 
-def create_new_question_entry(channel_id, question, answers):
+def create_new_question_entry(question, answers):
     """ Creates a new entry for a question in the .json file (with id=1) and returns it """
     new_question_entry = {
-    "id": 1,
-    "channel" : channel_id,
-    "question": question,
-    "answers" : []
+        'question': question,
+        'answers': []
     }
 
     for answer in answers:
         answer_entry = {
-        "answer": answer,
-        "votes": 0
+            "answer": answer,
+            "votes": 0
         }
 
         new_question_entry["answers"].append(answer_entry)
@@ -146,18 +147,18 @@ def find_question_entry(json_data, channel_id):
         Find the question entry in the data of the .json file
         Returns the dictionary that represents the question or @None if it wasn't found
     """
-    for question in json_data["questions"]:
-        if question["channel"] == channel_id:
-            return question
-    return None
+    channel_entry = json_data.get(str(channel_id), None)
+    if channel_entry == None:
+        return None
+    return channel_entry.get('1', None)
 
-def is_json_up_to_date(config_answers, saved_answers):
+def is_json_up_to_date(current_question_entry, question, config_answers):
     """ Check if the .json file and the configuration are coherent with one another """
-    #config_answers is a list of strings
-    #saved_answers is a list of dictionary with a key "answer" and a key "votes"
-    if not len(config_answers) == len(saved_answers):
+    if current_question_entry['question'] != question:
         return False
-    elif are_answers_updated(config_answers, saved_answers):
+    if len(config_answers) != len(current_question_entry['answers']):
+        return False
+    elif are_answers_updated(config_answers, current_question_entry['answers']):
         return False
     return True
 
@@ -170,12 +171,15 @@ def are_answers_updated(config_answers, saved_answers):
             return True
     return False
 
-def update_question(current_question_entry, new_question, new_answers):
+def update_question(current_question_entry, new_question):
     """
         Change the information contained in @current_question_entry to what's inside @new_question and @new_answers
         Reset the number of votes for each answer to the question
     """
-    current_question_entry["question"] = new_question
+    current_question_entry['question'] = new_question
+
+def update_answers(current_question_entry, new_answers):
+    """ Update and RESET the answers and the number of votes they have """
     updated_answers = []
     for answer in new_answers:
         updated_answers.append({
@@ -184,11 +188,20 @@ def update_question(current_question_entry, new_question, new_answers):
         })
     current_question_entry["answers"] = updated_answers
 
+def get_greatest_question_id(channel_entry):
+    """ Return the greatest question id in @channel_entry as an integer """
+    greatest_id = 0
+    for question_key in channel_entry:
+        question_id = int(float(question_key))
+        if question_id > greatest_id:
+            greatest_id = question_id
+    return question_id
+
 def count_total_nb_votes(current_question_entry):
     """ Count the total number of votes for all answers for the current question """
     total_nb_votes = 0
-    for answer in current_question_entry["answers"]:
-        total_nb_votes += answer["votes"]
+    for answer in current_question_entry['answers']:
+        total_nb_votes += answer['votes']
     return total_nb_votes
 
 def compute_ratio_votes(saved_answers, total_nb_votes):
@@ -198,13 +211,13 @@ def compute_ratio_votes(saved_answers, total_nb_votes):
 
     ratio_votes = []
     for answer in saved_answers:
-        ratio_votes.append(answer["votes"]/total_nb_votes)
+        ratio_votes.append(answer['votes']/total_nb_votes)
 
     return ratio_votes
 
 class SurveyCapsule(PluginCapsule):
-    def __init__(self, question, author, answers, ratio_votes, display_on_survey, channel_id, question_id):
-        self._slides = [SurveySlide(question, author, answers, ratio_votes, display_on_survey, channel_id, question_id)]
+    def __init__(self, still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, question_id):
+        self._slides = [SurveySlide(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, question_id)]
 
     def get_slides(self):
         return self._slides
@@ -216,9 +229,9 @@ class SurveyCapsule(PluginCapsule):
         return str(self.__dict__)
 
 class SurveySlide(PluginSlide):
-    def __init__(self, question, author, answers, ratio_votes, display_on_survey, channel_id, question_id):
+    def __init__(self, still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, question_id):
         self._duration = 10000000
-        self._content = {'title-1': {'text': question}, 'text-0': {'text': author}}
+        self._content = {'still-answerable': still_answerable, 'title-1': {'text': question}, 'text-0': {'text': author}}
 
         if len(answers) <= 5:
             self._content['nb-answers'] = len(answers)
@@ -230,6 +243,7 @@ class SurveySlide(PluginSlide):
             self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channel/'+str(channel_id)+'/validate/'+str(question_id)+'/'+str(i)}
             i += 1
 
+        self._content['total-nb-votes'] = total_nb_votes
         if display_on_survey:
             if ratio_votes == None: #currently 0 votes
                 self._content['show-results'] = False
