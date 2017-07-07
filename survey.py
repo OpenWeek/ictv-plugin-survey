@@ -64,6 +64,7 @@ def get_content(channel_id):
         saved_data = {
             'questions': [create_new_question_entry(channel_id, question, answers)]
         }
+        saved_data['questions'][0]['still-answerable'] = still_answerable
 
         ratio_votes = None
         current_question_entry = saved_data['questions'][-1]
@@ -75,9 +76,11 @@ def get_content(channel_id):
         current_question_entry = find_question_entry(saved_data, channel_id)
         if current_question_entry != None:
             #Check if the .json is up-to-date with the configuration
-            if not is_json_up_to_date(answers, current_question_entry["answers"]):
+            if not is_json_up_to_date(current_question_entry, still_answerable, question, answers):
                 must_write_json = True
-                update_question(current_question_entry, question, answers)
+                update_question(current_question_entry, still_answerable, question)
+                if are_answers_updated(answers, current_question_entry['answers']):
+                    update_answers(current_question_entry, answers) #update and reset answers
             total_nb_votes = count_total_nb_votes(current_question_entry)
         else: #the question was not contained in the .json file
             must_write_json = True
@@ -86,6 +89,7 @@ def get_content(channel_id):
                 new_question_entry["id"] = 1
             else:
                 new_question_entry["id"] = saved_data["questions"][-1]["id"] + 1
+            new_question_entry['still-answerable'] = still_answerable
             saved_data["questions"].append(new_question_entry)
             current_question_entry = new_question_entry
 
@@ -103,9 +107,11 @@ def is_json_valid(json_data):
     try:
         if json_data == None:
             return False
-        if json_data["questions"] == None:
+        if json_data['questions'] == None:
             return False
-        for question in json_data["questions"]:
+        for question in json_data['questions']:
+            if question['still-answerable'] == None:
+                return False
             if question["question"] == None:
                 return False
             if question["channel"] == None:
@@ -127,9 +133,10 @@ def create_new_question_entry(channel_id, question, answers):
     """ Creates a new entry for a question in the .json file (with id=1) and returns it """
     new_question_entry = {
     "id": 1,
-    "channel" : channel_id,
+    "channel": channel_id,
+    "still-answerable": True,
     "question": question,
-    "answers" : []
+    "answers": []
     }
 
     for answer in answers:
@@ -152,13 +159,15 @@ def find_question_entry(json_data, channel_id):
             return question
     return None
 
-def is_json_up_to_date(config_answers, saved_answers):
+def is_json_up_to_date(current_question_entry, still_answerable, question, config_answers):
     """ Check if the .json file and the configuration are coherent with one another """
-    #config_answers is a list of strings
-    #saved_answers is a list of dictionary with a key "answer" and a key "votes"
-    if not len(config_answers) == len(saved_answers):
+    if current_question_entry['still-answerable'] != still_answerable:
         return False
-    elif are_answers_updated(config_answers, saved_answers):
+    if current_question_entry['question'] != question:
+        return False
+    if len(config_answers) != len(current_question_entry['answers']):
+        return False
+    elif are_answers_updated(config_answers, current_question_entry['answers']):
         return False
     return True
 
@@ -171,12 +180,16 @@ def are_answers_updated(config_answers, saved_answers):
             return True
     return False
 
-def update_question(current_question_entry, new_question, new_answers):
+def update_question(current_question_entry, still_answerable, new_question):
     """
         Change the information contained in @current_question_entry to what's inside @new_question and @new_answers
         Reset the number of votes for each answer to the question
     """
-    current_question_entry["question"] = new_question
+    current_question_entry['still-answerable'] = still_answerable
+    current_question_entry['question'] = new_question
+
+def update_answers(current_question_entry, new_answers):
+    """ Update and RESET the answers and the number of votes they have """
     updated_answers = []
     for answer in new_answers:
         updated_answers.append({
@@ -199,7 +212,7 @@ def compute_ratio_votes(saved_answers, total_nb_votes):
 
     ratio_votes = []
     for answer in saved_answers:
-        ratio_votes.append(answer["votes"]/total_nb_votes)
+        ratio_votes.append(answer['votes']/total_nb_votes)
 
     return ratio_votes
 
