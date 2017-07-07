@@ -40,6 +40,7 @@ def get_app(ictv_app):
         'index', 'ictv.plugins.survey.app.IndexPage',
         'validate/(.+)/(.+)', 'ictv.plugins.survey.app.Validate',
         'stat/(.+)/(.+)', 'ictv.plugins.survey.app.Stat',
+        'stat/(.+)', 'ictv.plugins.survey.app.Stat',
         'modify/(.+)', 'ictv.plugins.survey.app.Modify'
 
     )
@@ -99,7 +100,11 @@ class IndexPage(SurveyPage):
         return "Hello World !"
 
 class Stat(SurveyPage):
-    def GET(self, id, answer):
+    def GET(self, id, answer=None):
+        if answer != None:
+            print(str(web.ctx.homedomain)+str(web.ctx.homepath) + "stat/" + str(id))
+            print("ctx path 2 : "+str(web.ctx.path))
+            web.redirect(str(web.ctx.homedomain)+str(web.ctx.homepath) + "stat/" + str(id))
         try:
             data_file = open('./plugins/survey/survey_questions.json', 'r')
             data = json.load(data_file)
