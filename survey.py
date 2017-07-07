@@ -64,7 +64,7 @@ def get_content(channel_id):
             "questions": [create_new_question_entry(channel_id, question, answers)]
         }
 
-        ratio_votes = [None]*len(answers)
+        ratio_votes = None
         current_question_entry = saved_data["questions"][-1]
     else:
         #Check that the .json file is valid
@@ -231,14 +231,14 @@ class SurveySlide(PluginSlide):
             i += 1
 
         if display_on_survey:
-            if ratio_votes == None:
+            if ratio_votes == None: #currently 0 votes
                 self._content['show-results'] = False
                 self._content['no-votes'] = True
             else:
                 self._content['show-results'] = True
                 self._content['no-votes'] = False
                 self._content['ratio-votes'] = ratio_votes
-        else:
+        else: #votes are not to be displayed on the survey screen
             self._content['show-results'] = False
             self._content['no-votes'] = None #no information about this
 
