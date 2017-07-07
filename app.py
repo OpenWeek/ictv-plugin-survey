@@ -108,7 +108,7 @@ class Validate(SurveyPage):
         return self.renderer.template_reponse(answer=answer_txt, question=question_txt, url_add=url_add, url_cancel = url_cancel)  # + url stat
 
 class IndexPage(SurveyPage):
-    #@ChannelGate.contributor
+    @ChannelGate.contributor
     def GET(self, download=None, channel=None):
         c_tmp = re.findall(r'\d+', web.ctx.homepath)
         c = str(c_tmp[0])

@@ -35,6 +35,10 @@ from pprint import pprint
 
 
 def get_content(channel_id):
+    #Note : At the moment, question_id is always 1 (which allows only one question per channel)
+    #       The idea would be to allow having several questions per channel using different IDs
+    #       for each question in the JSON file.
+
     #From the configuration file
     channel = Channel.get(channel_id)
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
@@ -63,12 +67,12 @@ def get_content(channel_id):
         must_write_json = True
         saved_data = {
             str(channel_id): {
-                '1': create_new_question_entry(question, answers)
+                '1': create_new_question_entry(question, answers) #question_id = 1 (cf. note)
             }
         }
 
         ratio_votes = None
-        current_question_entry = saved_data[str(channel_id)]['1']
+        current_question_entry = saved_data[str(channel_id)]['1'] #question_id = 1 (cf. note)
     else:
         #Check that the .json file is valid
         if not is_json_valid(saved_data):
@@ -99,7 +103,7 @@ def get_content(channel_id):
         with open('./plugins/survey/survey_questions.json', 'w') as file_to_write:
             json.dump(saved_data, file_to_write, indent=4)
 
-    return [SurveyCapsule(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, 1)]
+    return [SurveyCapsule(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, 1)] #question_id = 1 (cf. note)
 
 def is_json_valid(json_data):
     """ Check if the .json file contains valid syntax for a survey """
