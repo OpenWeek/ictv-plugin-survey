@@ -34,6 +34,7 @@ import json
 import traceback
 import fcntl
 import time
+from ictv.ORM.channel import Channel
 from ictv import get_root_path
 from ictv.pages.utils import ICTVPage
 
@@ -108,7 +109,7 @@ class Validate(SurveyPage):
         return self.renderer.template_reponse(answer=answer_txt, question=question_txt, url_add=url_add, url_cancel = url_cancel)  # + url stat
 
 class IndexPage(SurveyPage):
-    #@ChannelGate.contributor
+    @ChannelGate.contributor
     def GET(self, download=None, channel=None):
         c_tmp = re.findall(r'\d+', web.ctx.homepath)
         c = str(c_tmp[0])
@@ -172,13 +173,19 @@ class Stat(SurveyPage):
                             web.setcookie(hash,1, path=web.ctx.homepath)
                             break
                         i += 1
+                        
+                    with open('./plugins/survey/survey_questions.json', 'w') as to_write:
+                        json.dump(data, to_write, indent=4)
                 else:
                     print("cookie recognized")
 
-                with open('./plugins/survey/survey_questions.json', 'w') as to_write:
-                    json.dump(data, to_write, indent=4)
 
-                return self.renderer.template_stat(question_entry)
+                channel_config = Channel.get(channel_id)
+                display_stat = channel_config.get_config_param('display_in_webapp')
+                if display_stat:
+                    return self.renderer.template_stat(question_entry)
+                else:
+                    return self.renderer.template_merci()
             else:
                 return "Not found"
 
