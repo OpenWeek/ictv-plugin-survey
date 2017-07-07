@@ -24,6 +24,9 @@ $var description: Question + answers (with qr code)
    #results-title {
       margin-bottom: 1%
    }
+   #total-nb-votes {
+      margin-bottom: 1%
+   }
    .stacked-bar-graph {
       width: 100%;
       height: 3%;
@@ -90,9 +93,9 @@ $var description: Question + answers (with qr code)
                $ i += 1
          </div>
       $else:
-         <div id="results-title">
+         <h2 id="results-title">
             Résultats du sondage
-         </div>
+         </h2>
 
    $if slide:
       <div id="total-nb-votes">
