@@ -1,12 +1,9 @@
-$def with (question, answer, url_add, url_cancel)
-
+$def with (url)
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Vote</title>
-
-    <script src="/static/js/Chart.bundle.min.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Download result</title>
     <style>
         body {
             font-family: Verdana, Geneva, sans-serif
@@ -18,9 +15,6 @@ $def with (question, answer, url_add, url_cancel)
         }
         .text {
             text-align: center;
-            margin-bottom: 20px;
-        }
-        .question {
             font-size: 27px;
         }
 
@@ -40,25 +34,14 @@ $def with (question, answer, url_add, url_cancel)
           vertical-align: middle;
         }
 
-
     </style>
-  </head>
-  <body>
-
+</head>
+<body>
     <div class="centre">
-
         <div class="text">
-            À la question : <br>
-            <span class="question">$question</span>
+            Télécharger les résultats du sondage
         </div>
-        <div class="text">
-            Vous avez choisi: <br>
-            <span class="question">$answer</span>
-        </div>
-        <div>
-            <button type="button" class="button" style="background-color: #008cba" onclick='window.location.href="$url_add"'>Valider</button>
-            <button type="button" class="button" style="background-color: #e41734;" onclick='window.location.href="$url_cancel"'>Modifier</button>
-        </div>
+        <button type="button" class="button" style="background-color: #008cba" onclick='window.location.href="$url"'>Télécharger</button>
     </div>
-  </body>
-  </html>
+</body>
+</html>

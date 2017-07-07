@@ -22,6 +22,11 @@
 
 import os
 import hashlib
+import re
+
+#pour generer le csv:
+import io
+import csv
 
 import errno
 import web
@@ -31,6 +36,7 @@ import fcntl
 import time
 from ictv import get_root_path
 from ictv.pages.utils import ICTVPage
+from ictv.plugin_manager.plugin_utils import ChannelGate
 
 
 def get_app(ictv_app):
@@ -38,6 +44,7 @@ def get_app(ictv_app):
 
     urls = (
         'index', 'ictv.plugins.survey.app.IndexPage',
+        'index/(.+)', 'ictv.plugins.survey.app.IndexPage',
         'validate/(.+)/(.+)', 'ictv.plugins.survey.app.Validate',
         'stat/(.+)/(.+)', 'ictv.plugins.survey.app.Stat',
         'stat/(.+)', 'ictv.plugins.survey.app.Stat',
@@ -96,8 +103,43 @@ class Validate(SurveyPage):
 
 
 class IndexPage(SurveyPage):
-    def GET(self):
-        return "Hello World !"
+    @ChannelGate.contributor
+    def GET(self, download=None, channel=None):
+        c_tmp = re.findall(r'\d+', web.ctx.homepath)
+        c = str(c_tmp[0])
+        if download:
+            try:
+                data_file = open('./plugins/survey/survey_questions.json', 'r')
+                data = json.load(data_file)
+                data_file.close()
+
+            except IOError:
+                print("IOError !")
+                traceback.print_exc()
+
+            else:
+                chan_data = data[c]
+                output = io.StringIO()
+                csv_output = csv.writer(output)
+                csv_output.writerow(["ID_Question", "Question", "Answer_1", "Votes_1", "Answer_2", "Votes_2","Answer_3", "Votes_3", "Answer_4", "Votes_4","Answer_5", "Votes_5"])
+                for q in chan_data:
+                    csv_data = []
+                    csv_data.append(q)
+                    csv_data.append(str(chan_data[q]["question"]))
+                    for i in range(0,5):
+                        if i < len(chan_data[q]["answers"]):
+                            csv_data.append(chan_data[q]["answers"][i]["answer"])
+                            csv_data.append(chan_data[q]["answers"][i]["votes"])
+                        else:
+                            csv_data.append("\\")
+                            csv_data.append("NA")
+                    csv_output.writerow(csv_data)
+                return output.getvalue()
+                #return "Hello World !"
+        else:
+            name_files = "result_channel_"+c+".csv"
+            #return "<a href="+web.ctx.homedomain+web.ctx.homepath+"index/"+name_files+">download</a>"
+            return self.renderer.template_download(url=web.ctx.homedomain+web.ctx.homepath+"index/"+name_files)
 
 class Stat(SurveyPage):
     def GET(self, id, answer=None):
