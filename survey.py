@@ -43,7 +43,6 @@ def get_content(channel_id):
     author = channel.get_config_param('author')
     answers = channel.get_config_param('answers')
     display_on_survey = channel.get_config_param('display_on_survey')
-    display_in_webapp = channel.get_config_param('display_in_webapp')
 
     if not question or not answers:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
@@ -55,6 +54,7 @@ def get_content(channel_id):
     #For the .json
     current_question_entry = None
     must_write_json = False
+    total_nb_votes = 0
     try:
         with open('./plugins/survey/survey_questions.json', 'r') as data_file:
             saved_data = json.load(data_file)
@@ -77,6 +77,7 @@ def get_content(channel_id):
             if not is_json_up_to_date(answers, current_question_entry["answers"]):
                 must_write_json = True
                 update_question(current_question_entry, question, answers)
+            total_nb_votes = count_total_nb_votes(current_question_entry)
         else: #the question was not contained in the .json file
             must_write_json = True
             new_question_entry = create_new_question_entry(channel_id, question, answers)
@@ -88,7 +89,7 @@ def get_content(channel_id):
             current_question_entry = new_question_entry
 
         #Compute the percentage for each answers
-        ratio_votes = compute_ratio_votes(current_question_entry["answers"], current_question_entry["totalVotes"])
+        ratio_votes = compute_ratio_votes(current_question_entry["answers"], total_nb_votes)
 
     if must_write_json:
         with open('./plugins/survey/survey_questions.json', 'w') as file_to_write:
@@ -110,8 +111,6 @@ def is_json_valid(json_data):
                 return False
             if question["id"] == None:
                 return False
-            if question["totalVotes"] == None:
-                return False
             if question["answers"] == None:
                 return False
             for answer in question["answers"]:
@@ -129,7 +128,6 @@ def create_new_question_entry(channel_id, question, answers):
     "id": 1,
     "channel" : channel_id,
     "question": question,
-    "totalVotes":0,
     "answers" : []
     }
 
@@ -178,7 +176,6 @@ def update_question(current_question_entry, new_question, new_answers):
         Reset the number of votes for each answer to the question
     """
     current_question_entry["question"] = new_question
-    current_question_entry["totalVotes"] = 0
     updated_answers = []
     for answer in new_answers:
         updated_answers.append({
@@ -186,6 +183,13 @@ def update_question(current_question_entry, new_question, new_answers):
             "votes": 0
         })
     current_question_entry["answers"] = updated_answers
+
+def count_total_nb_votes(current_question_entry):
+    """ Count the total number of votes for all answers for the current question """
+    total_nb_votes = 0
+    for answer in current_question_entry["answers"]:
+        total_nb_votes += answer["votes"]
+    return total_nb_votes
 
 def compute_ratio_votes(saved_answers, total_nb_votes):
     """ Compute the percentage of answer for each answer """

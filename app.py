@@ -122,7 +122,6 @@ class Stat(SurveyPage):
                         i = 1
                         for el in e["answers"]:
                             if str(i) == answer:
-                                e["totalVotes"] += 1
                                 el["votes"] += 1
                                 #set cookies
                                 web.setcookie(hash,1, path=web.ctx.homepath)
