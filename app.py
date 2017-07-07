@@ -102,8 +102,6 @@ class IndexPage(SurveyPage):
 class Stat(SurveyPage):
     def GET(self, id, answer=None):
         if answer != None:
-            print(str(web.ctx.homedomain)+str(web.ctx.homepath) + "stat/" + str(id))
-            print("ctx path 2 : "+str(web.ctx.path))
             web.redirect(str(web.ctx.homedomain)+str(web.ctx.homepath) + "stat/" + str(id))
         try:
             data_file = open('./plugins/survey/survey_questions.json', 'r')
@@ -116,7 +114,7 @@ class Stat(SurveyPage):
         else:
             for e in data["questions"]:
                 if str(e["id"]) == str(id):
-                    hash = hashlib.md5(("un peu de text non previsible" + str(e["channel"]) + str(id)).encode('utf-8')).hexdigest()
+                    hash = hashlib.md5(("un peu de texte non previsible" + str(e["channel"]) + str(id)).encode('utf-8')).hexdigest()
                     #print("cookies: "+str(web.cookies().get('webpy_session_id')))
                     if not web.cookies().get(hash):
                         i = 1

@@ -38,9 +38,14 @@ $def with (question)
             <span class="question">$q </span>
         </div>
         <canvas id="myChart"></canvas>
+        $code:
+            total = 0
+            for a in question["answers"]:
+                total += a["votes"]
+
 
         <div class="text">
-            $ txt ="Nombre total de vote : "+ str(question["totalVotes"]) if question["totalVotes"]<= 1 else "Nombre total de votes : "+ str(question["totalVotes"])
+            $ txt ="Nombre total de vote : "+ str(total) if total<= 1 else "Nombre total de votes : "+ str(total)
             $txt
         </div>
 
