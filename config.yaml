@@ -23,7 +23,11 @@ channels_params:
      default: ['Oui', 'Non']
      add: 'Add answer (5 max.)'
   #Idée : laisser la possibilité d'entrer 4 réponses et si vide pas afficher
-  secret:
-    name: 'Survey results are secret'
+  display_on_survey:
+     name: 'Display poll results on the survey screen'
+     type: bool
+     default: yes
+  display_in_webapp:
+    name: 'Display poll results in the webapp'
     type: bool
-    default: no
+    default: yes

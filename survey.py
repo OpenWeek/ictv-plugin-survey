@@ -42,7 +42,8 @@ def get_content(channel_id):
     question = channel.get_config_param('question')
     author = channel.get_config_param('author')
     answers = channel.get_config_param('answers')
-    secret = channel.get_config_param('secret')
+    display_on_survey = channel.get_config_param('display_on_survey')
+    display_in_webapp = channel.get_config_param('display_in_webapp')
 
     if not question or not answers:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
@@ -93,7 +94,7 @@ def get_content(channel_id):
         with open('./plugins/survey/survey_questions.json', 'w') as file_to_write:
             json.dump(saved_data, file_to_write, indent=4)
 
-    return [SurveyCapsule(question, author, answers, ratio_votes, secret, channel_id, current_question_entry["id"])]
+    return [SurveyCapsule(question, author, answers, ratio_votes, display_on_survey, channel_id, current_question_entry["id"])]
 
 def is_json_valid(json_data):
     """ Check if the .json file contains valid syntax for a survey """
@@ -172,7 +173,10 @@ def are_answers_updated(config_answers, saved_answers):
     return False
 
 def update_question(current_question_entry, new_question, new_answers):
-    """ Change the information contained in @current_question_entry to what's inside @new_question and @new_answers """
+    """
+        Change the information contained in @current_question_entry to what's inside @new_question and @new_answers
+        Reset the number of votes for each answer to the question
+    """
     current_question_entry["question"] = new_question
     current_question_entry["totalVotes"] = 0
     updated_answers = []
@@ -195,8 +199,8 @@ def compute_ratio_votes(saved_answers, total_nb_votes):
     return ratio_votes
 
 class SurveyCapsule(PluginCapsule):
-    def __init__(self, question, author, answers, ratio_votes, secret, channel_id, question_id):
-        self._slides = [SurveySlide(question, author, answers, ratio_votes, secret, channel_id, question_id)]
+    def __init__(self, question, author, answers, ratio_votes, display_on_survey, channel_id, question_id):
+        self._slides = [SurveySlide(question, author, answers, ratio_votes, display_on_survey, channel_id, question_id)]
 
     def get_slides(self):
         return self._slides
@@ -208,7 +212,7 @@ class SurveyCapsule(PluginCapsule):
         return str(self.__dict__)
 
 class SurveySlide(PluginSlide):
-    def __init__(self, question, author, answers, ratio_votes, secret, channel_id, question_id):
+    def __init__(self, question, author, answers, ratio_votes, display_on_survey, channel_id, question_id):
         self._duration = 10000000
         self._content = {'title-1': {'text': question}, 'text-0': {'text': author}}
 
@@ -222,10 +226,7 @@ class SurveySlide(PluginSlide):
             self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channel/'+str(channel_id)+'/validate/'+str(question_id)+'/'+str(i)}
             i += 1
 
-        if secret:
-            self._content['show-results'] = False
-            self._content['no-votes'] = None #no information about this
-        else:
+        if display_on_survey:
             if ratio_votes == None:
                 self._content['show-results'] = False
                 self._content['no-votes'] = True
@@ -233,6 +234,9 @@ class SurveySlide(PluginSlide):
                 self._content['show-results'] = True
                 self._content['no-votes'] = False
                 self._content['ratio-votes'] = ratio_votes
+        else:
+            self._content['show-results'] = False
+            self._content['no-votes'] = None #no information about this
 
     def get_duration(self):
         return self._duration
