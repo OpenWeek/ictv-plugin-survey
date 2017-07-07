@@ -1,23 +1,10 @@
 # -*- coding: utf-8 -*-
 #
-#    This file belongs to the ICTV project, written by Nicolas Detienne,
-#    Francois Michel, Maxime Piraux, Pierre Reinbold and Ludovic Taffin
-#    at Universite Catholique de Louvain.
-#
-#    Copyright (C) 2017  Universite Catholique de Louvain (UCL, Belgium)
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published
-#    by the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    This file was written by Arnaud Gellens, Arthur van Stratum,
+#    Céline Deknop, Charles-Henry Bertrand Van Ouytsel,
+#    Margerie Huet and Simon Gustin during the OpenWeek 2017 at
+#    Universite Catholique de Louvain.
+#    This software is licensed under the MIT License.
 
 
 import web
@@ -35,6 +22,10 @@ from pprint import pprint
 
 
 def get_content(channel_id):
+    #Note : At the moment, question_id is always 1 (which allows only one question per channel)
+    #       The idea would be to allow having several questions per channel using different IDs
+    #       for each question in the JSON file.
+
     #From the configuration file
     channel = Channel.get(channel_id)
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
@@ -63,12 +54,12 @@ def get_content(channel_id):
         must_write_json = True
         saved_data = {
             str(channel_id): {
-                '1': create_new_question_entry(question, answers)
+                '1': create_new_question_entry(question, answers) #question_id = 1 (cf. note)
             }
         }
 
         ratio_votes = None
-        current_question_entry = saved_data[str(channel_id)]['1']
+        current_question_entry = saved_data[str(channel_id)]['1'] #question_id = 1 (cf. note)
     else:
         #Check that the .json file is valid
         if not is_json_valid(saved_data):
@@ -99,7 +90,7 @@ def get_content(channel_id):
         with open('./plugins/survey/survey_questions.json', 'w') as file_to_write:
             json.dump(saved_data, file_to_write, indent=4)
 
-    return [SurveyCapsule(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, 1)]
+    return [SurveyCapsule(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, 1)] #question_id = 1 (cf. note)
 
 def is_json_valid(json_data):
     """ Check if the .json file contains valid syntax for a survey """
