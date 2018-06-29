@@ -8,17 +8,20 @@
 
 
 import web
+import os
 from urllib.parse import urlparse
 
 from pyquery import PyQuery
 
-from ictv.ORM.channel import Channel
+from ictv.models.channel import PluginChannel
 from ictv.plugin_manager.plugin_capsule import PluginCapsule
 from ictv.plugin_manager.plugin_manager import get_logger
 from ictv.plugin_manager.plugin_slide import PluginSlide
 from ictv.plugin_manager.plugin_utils import MisconfiguredParameters
 import json
 from pprint import pprint
+
+from ictv.plugins.survey import questions_path
 
 
 def get_content(channel_id):
@@ -27,7 +30,7 @@ def get_content(channel_id):
     #       for each question in the JSON file.
 
     #From the configuration file
-    channel = Channel.get(channel_id)
+    channel = PluginChannel.get(channel_id)
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
     logger = get_logger('survey', channel)
     still_answerable = channel.get_config_param('answerable')
@@ -48,7 +51,7 @@ def get_content(channel_id):
     must_write_json = False
     total_nb_votes = 0
     try:
-        with open('./plugins/survey/survey_questions.json', 'r') as data_file:
+        with open(questions_path, 'r') as data_file:
             saved_data = json.load(data_file)
     except:
         must_write_json = True
@@ -87,7 +90,7 @@ def get_content(channel_id):
         ratio_votes = compute_ratio_votes(current_question_entry['answers'], total_nb_votes)
 
     if must_write_json:
-        with open('./plugins/survey/survey_questions.json', 'w') as file_to_write:
+        with open(questions_path, 'w') as file_to_write:
             json.dump(saved_data, file_to_write, indent=4)
 
     return [SurveyCapsule(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey, channel_id, 1)] #question_id = 1 (cf. note)
@@ -231,7 +234,7 @@ class SurveySlide(PluginSlide):
         i = 1
         for answer in answers:
             self._content['text-'+str(i)] = {'text': answer}
-            self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channel/'+str(channel_id)+'/validate/'+str(question_id)+'/'+str(i)}
+            self._content['image-'+str(i)] = {'qrcode': web.ctx.homedomain+'/channels/'+str(channel_id)+'/validate/'+str(question_id)+'/'+str(i)}
             i += 1
 
         self._content['total-nb-votes'] = total_nb_votes
