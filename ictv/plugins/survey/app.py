@@ -21,14 +21,14 @@ import json
 import traceback
 import fcntl
 import time
-from ictv.ORM.channel import Channel
-from ictv import get_root_path
+from ictv.models.channel import PluginChannel
 from ictv.pages.utils import ICTVPage
 
 from ictv.plugin_manager.plugin_utils import ChannelGate
 
 import re
 
+from ictv.plugins.survey import questions_path
 
 
 def get_app(ictv_app):
@@ -45,7 +45,7 @@ def get_app(ictv_app):
     )
 
     app = web.application(urls, globals())
-    app.renderer = web.template.render(os.path.join(get_root_path(), 'plugins/survey/templates'), globals={'print':print, 'str':str})
+    app.renderer = web.template.render(os.path.join(os.path.dirname(__file__), 'templates'), globals={'print':print, 'str':str})
 
     SurveyPage.plugin_app = app
 
@@ -72,7 +72,7 @@ class Validate(SurveyPage):
         answer_txt = None
         channel_id = -1
         try:
-            with open('./plugins/survey/survey_questions.json', 'r') as data_file:
+            with open(questions_path, 'r') as data_file:
                 data = json.load(data_file)
         except IOError:
             print("IOError !")
@@ -102,7 +102,7 @@ class IndexPage(SurveyPage):
         c = str(c_tmp[0])
         if download:
             try:
-                data_file = open('./plugins/survey/survey_questions.json', 'r')
+                data_file = open(questions_path, 'r')
                 data = json.load(data_file)
                 data_file.close()
 
@@ -139,7 +139,7 @@ class Stat(SurveyPage):
         if answer != None:
             web.redirect(str(web.ctx.homedomain)+str(web.ctx.homepath) + "stat/" + str(question_id))
         try:
-            with open('./plugins/survey/survey_questions.json', 'r') as data_file:
+            with open(questions_path, 'r') as data_file:
                 data = json.load(data_file)
         except IOError:
             print("IOError !")
@@ -161,13 +161,13 @@ class Stat(SurveyPage):
                             break
                         i += 1
                         
-                    with open('./plugins/survey/survey_questions.json', 'w') as to_write:
+                    with open(questions_path, 'w') as to_write:
                         json.dump(data, to_write, indent=4)
                 else:
                     print("cookie recognized")
 
 
-                channel_config = Channel.get(channel_id)
+                channel_config = PluginChannel.get(channel_id)
                 display_stat = channel_config.get_config_param('display_in_webapp')
                 if display_stat:
                     return self.renderer.template_stat(question_entry)
@@ -181,7 +181,7 @@ class Modify(SurveyPage):
         answers = []
         channel_id = get_channel_id_from_url(web.ctx.homepath)
         try:
-            with open('./plugins/survey/survey_questions.json', 'r') as data_file:
+            with open(questions_path, 'r') as data_file:
                 data = json.load(data_file)
         except IOError:
             print("IOError !")
@@ -193,7 +193,7 @@ class Modify(SurveyPage):
                 for current_answer in question_entry['answers']:
                     answers.append(current_answer["answer"])
             else:
-                raise KeyError("The question with this ID(%d) is not contained in the JSON file." % quesion_id)
+                raise KeyError("The question with this ID(%d) is not contained in the JSON file." % question_id)
 
         url = web.ctx.homedomain + '/channels/' + str(channel_id) + '/validate/' + question_id + '/'
         return self.renderer.template_modify(answers=answers, question=question_txt, url=url)
