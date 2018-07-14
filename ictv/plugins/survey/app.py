@@ -7,27 +7,20 @@
 #    This software is licensed under the MIT License.
 
 
-import os
-import hashlib
-import re
-
-#pour generer le csv:
-import io
 import csv
-
-import errno
-import web
+import hashlib
+# pour generer le csv:
+import io
 import json
+import os
+import re
 import traceback
-import fcntl
-import time
+
+import web
+
 from ictv.models.channel import PluginChannel
 from ictv.pages.utils import ICTVPage
-
 from ictv.plugin_manager.plugin_utils import ChannelGate
-
-import re
-
 from ictv.plugins.survey import questions_path
 
 
@@ -45,7 +38,8 @@ def get_app(ictv_app):
     )
 
     app = web.application(urls, globals())
-    app.renderer = web.template.render(os.path.join(os.path.dirname(__file__), 'templates'), globals={'print':print, 'str':str})
+    app.renderer = web.template.render(os.path.join(os.path.dirname(__file__), 'templates'),
+                                       globals={'print': print, 'str': str})
 
     SurveyPage.plugin_app = app
 
@@ -87,13 +81,15 @@ class Validate(SurveyPage):
                     answer_txt = current_answer['answer']
                 i += 1
 
-        url_add = web.ctx.homedomain+'/channels/'+str(channel_id)+'/stat/'+question_id+'/'+answer
+        url_add = web.ctx.homedomain + '/channels/' + str(channel_id) + '/stat/' + question_id + '/' + answer
         url_cancel = web.ctx.homedomain + '/channels/' + str(channel_id) + '/modify/' + question_id
 
-        if question_txt == None or answer_txt == None:
+        if question_txt is None or answer_txt is None:
             raise KeyError("The survey question or the answers to the question couldn't be found in the JSON file.")
 
-        return self.renderer.template_reponse(answer=answer_txt, question=question_txt, url_add=url_add, url_cancel = url_cancel)  # + url stat
+        return self.renderer.template_reponse(answer=answer_txt, question=question_txt, url_add=url_add,
+                                              url_cancel=url_cancel)  # + url stat
+
 
 class IndexPage(SurveyPage):
     @ChannelGate.contributor
@@ -114,12 +110,12 @@ class IndexPage(SurveyPage):
                 chan_data = data[c]
                 output = io.StringIO()
                 csv_output = csv.writer(output)
-                csv_output.writerow(["ID_Question", "Question", "Answer_1", "Votes_1", "Answer_2", "Votes_2","Answer_3", "Votes_3", "Answer_4", "Votes_4","Answer_5", "Votes_5"])
+                csv_output.writerow(
+                    ["ID_Question", "Question", "Answer_1", "Votes_1", "Answer_2", "Votes_2", "Answer_3", "Votes_3",
+                     "Answer_4", "Votes_4", "Answer_5", "Votes_5"])
                 for q in chan_data:
-                    csv_data = []
-                    csv_data.append(q)
-                    csv_data.append(str(chan_data[q]["question"]))
-                    for i in range(0,5):
+                    csv_data = [q, str(chan_data[q]["question"])]
+                    for i in range(0, 5):
                         if i < len(chan_data[q]["answers"]):
                             csv_data.append(chan_data[q]["answers"][i]["answer"])
                             csv_data.append(chan_data[q]["answers"][i]["votes"])
@@ -128,16 +124,17 @@ class IndexPage(SurveyPage):
                             csv_data.append("NA")
                     csv_output.writerow(csv_data)
                 return output.getvalue()
-                #return "Hello World !"
+                # return "Hello World !"
         else:
-            name_files = "result_channel_"+c+".csv"
-            #return "<a href="+web.ctx.homedomain+web.ctx.homepath+"index/"+name_files+">download</a>"
-            return self.renderer.template_download(url=web.ctx.homedomain+web.ctx.homepath+"index/"+name_files)
+            name_files = "result_channel_" + c + ".csv"
+            # return "<a href="+web.ctx.homedomain+web.ctx.homepath+"index/"+name_files+">download</a>"
+            return self.renderer.template_download(url=web.ctx.homedomain + web.ctx.homepath + "index/" + name_files)
+
 
 class Stat(SurveyPage):
     def GET(self, question_id, answer=None):
-        if answer != None:
-            web.redirect(str(web.ctx.homedomain)+str(web.ctx.homepath) + "stat/" + str(question_id))
+        if answer is not None:
+            web.redirect(str(web.ctx.homedomain) + str(web.ctx.homepath) + "stat/" + str(question_id))
         try:
             with open(questions_path, 'r') as data_file:
                 data = json.load(data_file)
@@ -148,24 +145,24 @@ class Stat(SurveyPage):
             channel_id = get_channel_id_from_url(web.ctx.homepath)
             question_entry = get_question_entry(data, channel_id, question_id)
 
-            if question_entry != None:
-                hash = hashlib.md5(("un peu de texte non previsible" + str(channel_id) + str(question_id)).encode('utf-8')).hexdigest()
-                #print("cookies: "+str(web.cookies().get('webpy_session_id')))
+            if question_entry is not None:
+                hash = hashlib.md5(
+                    ("un peu de texte non previsible" + str(channel_id) + str(question_id)).encode('utf-8')).hexdigest()
+                # print("cookies: "+str(web.cookies().get('webpy_session_id')))
                 if not web.cookies().get(hash):
                     i = 1
                     for current_answer in question_entry["answers"]:
                         if str(i) == answer:
                             current_answer["votes"] += 1
-                            #set cookies
-                            web.setcookie(hash,1, path=web.ctx.homepath)
+                            # set cookies
+                            web.setcookie(hash, 1, path=web.ctx.homepath)
                             break
                         i += 1
-                        
+
                     with open(questions_path, 'w') as to_write:
                         json.dump(data, to_write, indent=4)
                 else:
                     print("cookie recognized")
-
 
                 channel_config = PluginChannel.get(channel_id)
                 display_stat = channel_config.get_config_param('display_in_webapp')
@@ -175,6 +172,7 @@ class Stat(SurveyPage):
                     return self.renderer.template_merci()
             else:
                 return "Not found"
+
 
 class Modify(SurveyPage):
     def GET(self, question_id):
@@ -188,7 +186,7 @@ class Modify(SurveyPage):
             traceback.print_exc()
         else:
             question_entry = get_question_entry(data, channel_id, question_id)
-            if question_entry != None:
+            if question_entry is not None:
                 question_txt = question_entry['question']
                 for current_answer in question_entry['answers']:
                     answers.append(current_answer["answer"])
@@ -198,11 +196,13 @@ class Modify(SurveyPage):
         url = web.ctx.homedomain + '/channels/' + str(channel_id) + '/validate/' + question_id + '/'
         return self.renderer.template_modify(answers=answers, question=question_txt, url=url)
 
+
 def get_channel_id_from_url(url):
     return re.findall(r'\d+', url)[0]
 
+
 def get_question_entry(json_data, channel_id, question_id):
     channel_entry = json_data.get(str(channel_id), None)
-    if channel_entry == None:
+    if channel_entry is None:
         return None
     return channel_entry.get(str(question_id), None)
