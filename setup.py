@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='ictv-plugin-survey',
-    version='0.1',
+    version='0.1.1',
     packages=['ictv.plugins.survey', 'ictv.renderer'],
     package_dir={'ictv': 'ictv'},
     url='https://github.com/OpenWeek/ictv-plugin-survey',
