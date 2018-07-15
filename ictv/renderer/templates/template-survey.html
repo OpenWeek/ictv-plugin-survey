@@ -87,7 +87,7 @@ $var description: Question + answers (with qr code)
    $if slide:
       $if not slide['no-votes']:
          <div id="total-nb-votes">
-            $:slide['total-nb-votes'] vote$('s' if slide['total-nb-votes'] == 1 else '')
+            $:slide['total-nb-votes'] vote$('s' if slide['total-nb-votes'] > 1 else '')
          </div>
       $if slide['show-results']:
          <!-- Show the poll results -->
@@ -97,7 +97,7 @@ $var description: Question + answers (with qr code)
                $if slide['ratio-votes'][i-1] != 0:
                   $ width = slide['ratio-votes'][i-1]*98 #We multiply by 98 instead of 100 to prevent display problem when one of the percentages are too close to 100%
                   <span style="width:$:width%" class="bar-$i">
-                     $:text(content=slide, style="max-width: 200px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;", number=i, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
+                     $:text(content=slide, style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;", number=i, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
                   </span>
                $ i += 1
          </div>
