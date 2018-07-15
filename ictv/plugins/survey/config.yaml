@@ -38,3 +38,8 @@ channels_params:
     name: 'Display poll results to participant after voting'
     type: bool
     default: yes
+  theme:
+    name: 'Theme:'
+    placeholder: ''
+    type: string
+    default: 'ictv'

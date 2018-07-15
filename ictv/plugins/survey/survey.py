@@ -33,6 +33,7 @@ def get_content(channel_id):
     author = channel.get_config_param('subtitle')
     answers = channel.get_config_param('answers')
     display_on_survey = channel.get_config_param('display_on_survey')
+    theme = channel.get_config_param('theme')
 
     if not question or not answers:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
@@ -89,7 +90,7 @@ def get_content(channel_id):
             json.dump(saved_data, file_to_write, indent=4)
 
     return [SurveyCapsule(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey,
-                          channel_id, 1)]  # question_id = 1 (cf. note)
+                          channel_id, 1, theme)]  # question_id = 1 (cf. note)
 
 
 def is_json_valid(json_data):
@@ -215,7 +216,8 @@ def compute_ratio_votes(saved_answers, total_nb_votes):
 
 class SurveyCapsule(PluginCapsule):
     def __init__(self, still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey,
-                 channel_id, question_id):
+                 channel_id, question_id, theme):
+        self.theme = theme
         self._slides = [
             SurveySlide(still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey,
                         channel_id, question_id)]
@@ -223,8 +225,8 @@ class SurveyCapsule(PluginCapsule):
     def get_slides(self):
         return self._slides
 
-    def get_theme(self):  # TODO : change that ?
-        return None
+    def get_theme(self):
+        return self.theme
 
     def __repr__(self):
         return str(self.__dict__)
