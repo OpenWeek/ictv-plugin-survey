@@ -7,9 +7,8 @@ $def with (question, answers, url)
    This software is licensed under the MIT License.
 -->
 
-
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Vote</title>
 
@@ -18,53 +17,58 @@ $def with (question, answers, url)
         body {
             font-family: Verdana, Geneva, sans-serif
         }
-       .centre {
+
+        .centre {
             margin-left: auto;
             margin-right: auto;
             width: 300px;
         }
+
         .text {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .question {
             font-size: 27px;
         }
+
         canvas {
             padding-top: 10px;
             padding-bottom: 10px;
         }
 
         .button {
-          display: inline-block;
-          border-radius: 4px;
-          background-color: #f4511e;
-          border: none;
-          color: #FFFFFF;
-          text-align: center;
-          font-size: 28px;
-          padding: 10px;
-          width: 100%;
-          transition: all 0.5s;
-          cursor: pointer;
-          margin: 5px;
-          vertical-align: middle;
+            display: inline-block;
+            border-radius: 4px;
+            background-color: #f4511e;
+            border: none;
+            color: #FFFFFF;
+            text-align: center;
+            font-size: 28px;
+            padding: 10px;
+            width: 100%;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+            vertical-align: middle;
+            text-decoration: none;
         }
 
 
     </style>
-  </head>
-  <body>
+</head>
+<body>
 
-    <div class="centre">
+<div class="centre">
 
-        <div class="text">
-            <span class="question">$question</span>
-        </div>
-        <div>
-            $for e in answers:
-                <button type="button" class="button" style="background-color: #008cba" onclick='window.location.href="$url"+$loop.index0'>$e</button>
-        </div>
+    <div class="text">
+        <span class="question">$question</span>
     </div>
-  </body>
-  </html>
+    <div>
+        $for e in answers:
+            <a href="$('{}{}'.format(url, loop.index0))" class="button" style="background-color: #008cba">$e</a>
+    </div>
+</div>
+</body>
+</html>

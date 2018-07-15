@@ -11,30 +11,32 @@ $def with (already_voted=False)
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Merci</title>
+    <title>Thank you</title>
     <style>
         body {
             font-family: Verdana, Geneva, sans-serif
         }
-       .centre {
+
+        .centre {
             margin-left: auto;
             margin-right: auto;
             width: 300px;
         }
+
         .text {
             text-align: center;
-            font-size: 27px;
+            font-size: large;
         }
 
     </style>
 </head>
 <body>
-     <div class="centre">
-        <div class="text">
-            $if already_voted:
-                Votre vote n'a pas été enregistré car vous avez déjà répondu à cette question.
-            Merci d'avoir participé.
-        </div>
+<div class="centre">
+    <div class="text">
+        $if already_voted:
+        Your vote has not been registered because you already have answered to this question.
+        Thank you for completing this survey.
     </div>
+</div>
 </body>
 </html>

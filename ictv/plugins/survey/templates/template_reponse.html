@@ -10,7 +10,7 @@ $def with (question, answer, url_add, url_cancel)
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Vote</title>
 
@@ -19,58 +19,60 @@ $def with (question, answer, url_add, url_cancel)
         body {
             font-family: Verdana, Geneva, sans-serif
         }
-       .centre {
+
+        .centre {
             margin-left: auto;
             margin-right: auto;
             width: 300px;
         }
+
         .text {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .question {
             font-size: 27px;
         }
 
         .button {
-          display: inline-block;
-          border-radius: 4px;
-          background-color: #f4511e;
-          border: none;
-          color: #FFFFFF;
-          text-align: center;
-          font-size: 28px;
-          padding-top: 10px;
-          padding-bottom: 10px;
-          width: 100%;
-          transition: all 0.5s;
-          cursor: pointer;
-          margin: 5px;
-          vertical-align: middle;
-          text-decoration-line: none;
+            display: inline-block;
+            border-radius: 4px;
+            background-color: #f4511e;
+            border: none;
+            color: #FFFFFF;
+            text-align: center;
+            font-size: 28px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            width: 100%;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+            vertical-align: middle;
+            text-decoration-line: none;
         }
 
 
     </style>
-  </head>
-  <body>
+</head>
+<body>
 
-    <div class="centre">
+<div class="centre">
 
-        <div class="text">
-            À la question : <br>
-            <span class="question">$question</span>
-        </div>
-        <div class="text">
-            Vous avez choisi: <br>
-            <span class="question">$answer</span>
-        </div>
-        <div>
-            <form action="$url_add" method="post">
-                <button type="submit" class="button" style="background-color: #008cba">Valider</button>
-            </form>
-            <a href="$url_cancel" class="button" style="background-color: #e41734;">Modifier</a>
-        </div>
+    <div class="text">
+        <span class="question">$question</span>
     </div>
-  </body>
-  </html>
+    <div class="text">
+        You choose: <br>
+        <span class="question">$answer</span>
+    </div>
+    <div>
+        <form action="$url_add" method="post">
+            <button type="submit" class="button" style="background-color: #008cba">Confirm my vote</button>
+        </form>
+        <a href="$url_cancel" class="button" style="background-color: #e41734;">Change my vote</a>
+    </div>
+</div>
+</body>
+</html>

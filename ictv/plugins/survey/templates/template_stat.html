@@ -8,10 +8,9 @@ $def with (question)
 -->
 
 
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Stat</title>
 
@@ -20,76 +19,78 @@ $def with (question)
         body {
             font-family: Verdana, Geneva, sans-serif
         }
-       .centre {
+
+        .centre {
             margin-left: auto;
             margin-right: auto;
             width: 300px;
         }
+
         .text {
             text-align: center;
         }
+
         .question {
             font-size: 27px;
         }
+
         canvas {
             padding-top: 10px;
             padding-bottom: 10px;
         }
     </style>
-  </head>
-  <body>
-    <!-- page content -->
-    $ q = question["question"]
-    <div class="centre">
-        <div class="text">
-            Résultat du sondage :<br>
-            <span class="question">$q </span>
-        </div>
-        <canvas id="myChart"></canvas>
-        $code:
-            total = 0
-            for a in question["answers"]:
-                total += a["votes"]
+</head>
+<body>
+<!-- page content -->
+$ q = question["question"]
+<div class="centre">
+    <div class="text">
+        Survey results :<br>
+        <span class="question">$q</span>
+    </div>
+    <canvas id="myChart"></canvas>
+    $code:
+        total = 0
+        for a in question["answers"]:
+            total += a["votes"]
 
-
-        <div class="text">
-            $ txt ="Nombre total de vote : "+ str(total) if total<= 1 else "Nombre total de votes : "+ str(total)
-            $txt
-        </div>
-
+    <div class="text">
+        $"# votes{}: {}".format('s' if total > 1 else '', total)
     </div>
 
+</div>
 
-    <script>
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var chart = new Chart(ctx, {
-            // The type of chart we want to create
-            type: 'doughnut',
 
-            // The data for our dataset
-            data: {
-                datasets: [{
-                    data: [
-                        $for a in question["answers"]:
-                            $a["votes"] ,
-                        ],
-                    backgroundColor: ['rgba(255, 165, 0, 0.4)',
-                                        'rgba(30, 144, 255, 0.4)',
-                                        'rgba(255, 64, 64, 0.4)',
-                                        'rgba(143, 0, 255, 0.4)',
-                                        'rgba(188, 238, 104, 0.6)']
-                }],
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'doughnut',
 
-                // These labels appear in the legend and in the tooltips when hovering different arcs
-                labels: [
-                    $for b in question["answers"]
-                            "$b["answer"]" ,
-                ]
-            },
+        // The data for our dataset
+        data: {
+            datasets: [{
+                data: [
+                    $for a in question["answers"]:
+                        $a["votes"] ,
+                    ],
+                backgroundColor: ['rgba(255, 165, 0, 0.4)',
+                                    'rgba(30, 144, 255, 0.4)',
+                                    'rgba(255, 64, 64, 0.4)',
+                                    'rgba(143, 0, 255, 0.4)',
+                                    'rgba(188, 238, 104, 0.6)']
+            }],
 
-            // Configuration options go here
-            options: {}
-        });
-    </script>
-  </body>
+            // These labels appear in the legend and in the tooltips when hovering different arcs
+            labels: [
+                $for b in question["answers"]
+                        " $b["answer"]" ,
+            ]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+</script>
+</body>
 </html>
