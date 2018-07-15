@@ -69,7 +69,7 @@ def get_content(channel_id):
             if not is_json_up_to_date(current_question_entry, question, answers):
                 must_write_json = True
                 update_question(current_question_entry, question)
-                if are_answers_updated(answers, current_question_entry['answers']):
+                if not are_answers_updated(answers, current_question_entry['answers']):
                     update_answers(current_question_entry, answers)  # update and reset answers
             total_nb_votes = count_total_nb_votes(current_question_entry)
         else:  # the question was not contained in the .json file
@@ -152,19 +152,16 @@ def is_json_up_to_date(current_question_entry, question, config_answers):
         return False
     if len(config_answers) != len(current_question_entry['answers']):
         return False
-    elif are_answers_updated(config_answers, current_question_entry['answers']):
+    elif not are_answers_updated(config_answers, current_question_entry['answers']):
         return False
     return True
 
 
 def are_answers_updated(config_answers, saved_answers):
-    """ Check if all the saved answers are the answers stored in the configuration """
+    """ Check if all the saved answers are the answers stored in the configuration and vice versa """
     # config_answers is a list of strings
     # saved_answers is a list of dictionary with a key "answer" and a key "votes"
-    for saved_answer in saved_answers:
-        if saved_answer["answer"] not in config_answers:
-            return True
-    return False
+    return set(s['answer'] for s in saved_answers) == set(config_answers)
 
 
 def update_question(current_question_entry, new_question):
