@@ -21,7 +21,7 @@ import web
 from ictv.models.channel import PluginChannel
 from ictv.pages.utils import ICTVPage
 from ictv.plugin_manager.plugin_manager import get_logger
-from ictv.plugin_manager.plugin_utils import ChannelGate
+from ictv.plugin_manager.plugin_utils import ChannelGate, seeother
 from ictv.plugins.survey import questions_path
 
 
@@ -32,7 +32,6 @@ def get_app(ictv_app):
         'index', 'ictv.plugins.survey.app.IndexPage',
         'index/(.+)', 'ictv.plugins.survey.app.IndexPage',
         'confirm/(.+)/(.+)', 'ictv.plugins.survey.app.Confirm',
-        'stat/(.+)/(.+)', 'ictv.plugins.survey.app.Stat',
         'stat/(.+)', 'ictv.plugins.survey.app.Stat',
         'modify/(.+)', 'ictv.plugins.survey.app.Modify'
 
@@ -79,16 +78,42 @@ class Confirm(SurveyPage):
         channel_id = get_channel_id_from_url(web.ctx.homepath)
         question_entry = get_question_entry(data, channel_id, question_id)
         question_txt = question_entry['question']
-        answer_txt = question_entry['answers'][int(answer_id) - 1] if int(answer_id) - 1 in question_entry['answers'] else None
+        answer_txt = question_entry['answers'][int(answer_id)]['answer'] \
+            if 0 <= int(answer_id) <= len(question_entry['answers']) else None
 
-        url_add = web.ctx.homedomain + '/channels/' + str(channel_id) + '/stat/' + question_id + '/' + answer_id
+        url_add = web.ctx.homedomain + '/channels/' + str(channel_id) + '/confirm/' + question_id + '/' + answer_id
         url_cancel = web.ctx.homedomain + '/channels/' + str(channel_id) + '/modify/' + question_id
 
         if not question_txt or not answer_txt:
-            self.logger.warn('The survey question or the answer to the question couldn\'t be found in the JSON file.')
+            self.logger.warn("The survey question or the answer to the question couldn't be found in the JSON file.")
+            seeother(channel_id, '/modify/' + question_id)
 
         return self.renderer.template_reponse(answer=answer_txt, question=question_txt, url_add=url_add,
                                               url_cancel=url_cancel)  # + url stat
+
+    def POST(self, question_id, answer_id):
+        with open(questions_path, 'r') as data_file:
+            data = json.load(data_file)
+
+        channel_id = get_channel_id_from_url(web.ctx.homepath)
+        channel = PluginChannel.get(channel_id)
+        question_entry = get_question_entry(data, channel_id, question_id)
+
+        if question_entry:
+            vote_hash = hashlib.md5((str(channel_id) + question_id + question_entry['question']).encode('utf-8')).hexdigest()
+            if not web.cookies().get(vote_hash) and 0 <= int(answer_id) <= len(question_entry["answers"]):
+                question_entry['answers'][int(answer_id)]['votes'] += 1
+                web.setcookie(vote_hash, 1, path=web.ctx.homepath)
+                with open(questions_path, 'w') as to_write:
+                    json.dump(data, to_write)
+
+                if channel.get_config_param('display_in_webapp'):
+                    raise seeother(channel_id, '/stat/' + question_id)
+                return self.renderer.template_merci()
+            elif not channel.get_config_param('display_in_webapp'):
+                return self.renderer.template_merci(already_voted=True)
+
+        raise seeother(channel_id, '/stat/' + question_id)
 
 
 class IndexPage(SurveyPage):
@@ -133,45 +158,18 @@ class IndexPage(SurveyPage):
 
 class Stat(SurveyPage):
     def GET(self, question_id, answer=None):
+        channel_id = get_channel_id_from_url(web.ctx.homepath)
+
         if answer is not None:
-            web.redirect(str(web.ctx.homedomain) + str(web.ctx.homepath) + "stat/" + str(question_id))
-        try:
-            with open(questions_path, 'r') as data_file:
-                data = json.load(data_file)
-        except IOError:
-            print("IOError !")
-            traceback.print_exc()
-        else:
-            channel_id = get_channel_id_from_url(web.ctx.homepath)
-            question_entry = get_question_entry(data, channel_id, question_id)
+            raise seeother(channel_id, '/stat/' + question_id)
 
-            if question_entry is not None:
-                hash = hashlib.md5(
-                    ("un peu de texte non previsible" + str(channel_id) + str(question_id)).encode('utf-8')).hexdigest()
-                # print("cookies: "+str(web.cookies().get('webpy_session_id')))
-                if not web.cookies().get(hash):
-                    i = 1
-                    for current_answer in question_entry["answers"]:
-                        if str(i) == answer:
-                            current_answer["votes"] += 1
-                            # set cookies
-                            web.setcookie(hash, 1, path=web.ctx.homepath)
-                            break
-                        i += 1
+        with open(questions_path, 'r') as data_file:
+            data = json.load(data_file)
 
-                    with open(questions_path, 'w') as to_write:
-                        json.dump(data, to_write, indent=4)
-                else:
-                    print("cookie recognized")
-
-                channel_config = PluginChannel.get(channel_id)
-                display_stat = channel_config.get_config_param('display_in_webapp')
-                if display_stat:
-                    return self.renderer.template_stat(question_entry)
-                else:
-                    return self.renderer.template_merci()
-            else:
-                return "Not found"
+        question_entry = get_question_entry(data, channel_id, question_id)
+        if question_entry and PluginChannel.get(channel_id).get_config_param('display_in_webapp'):
+            return self.renderer.template_stat(question_entry)
+        raise web.forbidden()
 
 
 class Modify(SurveyPage):
@@ -191,7 +189,7 @@ class Modify(SurveyPage):
                 for current_answer in question_entry['answers']:
                     answers.append(current_answer["answer"])
             else:
-                raise KeyError("The question with this ID(%d) is not contained in the JSON file." % question_id)
+                raise KeyError("The question with this ID(%s) is not contained in the JSON file." % question_id)
 
         url = web.ctx.homedomain + '/channels/' + str(channel_id) + '/confirm/' + question_id + '/'
         return self.renderer.template_modify(answers=answers, question=question_txt, url=url)

@@ -40,12 +40,14 @@ $def with (question, answer, url_add, url_cancel)
           color: #FFFFFF;
           text-align: center;
           font-size: 28px;
-          padding: 10px;
+          padding-top: 10px;
+          padding-bottom: 10px;
           width: 100%;
           transition: all 0.5s;
           cursor: pointer;
           margin: 5px;
           vertical-align: middle;
+          text-decoration-line: none;
         }
 
 
@@ -64,8 +66,10 @@ $def with (question, answer, url_add, url_cancel)
             <span class="question">$answer</span>
         </div>
         <div>
-            <button type="button" class="button" style="background-color: #008cba" onclick='window.location.href="$url_add"'>Valider</button>
-            <button type="button" class="button" style="background-color: #e41734;" onclick='window.location.href="$url_cancel"'>Modifier</button>
+            <form action="$url_add" method="post">
+                <button type="submit" class="button" style="background-color: #008cba">Valider</button>
+            </form>
+            <a href="$url_cancel" class="button" style="background-color: #e41734;">Modifier</a>
         </div>
     </div>
   </body>

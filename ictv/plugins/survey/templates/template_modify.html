@@ -62,10 +62,8 @@ $def with (question, answers, url)
             <span class="question">$question</span>
         </div>
         <div>
-            $ i = 1
-            $for e in answers
-            <button type="button" class="button" style="background-color: #008cba" onclick='window.location.href="$url"+$i'>$e</button>
-            $ i += 1
+            $for e in answers:
+                <button type="button" class="button" style="background-color: #008cba" onclick='window.location.href="$url"+$loop.index0'>$e</button>
         </div>
     </div>
   </body>

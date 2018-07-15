@@ -1,3 +1,4 @@
+$def with (already_voted=False)
 <!--
    This file was written by Arnaud Gellens, Arthur van Stratum,
    Céline Deknop, Charles-Henry Bertrand Van Ouytsel,
@@ -30,6 +31,8 @@
 <body>
      <div class="centre">
         <div class="text">
+            $if already_voted:
+                Votre vote n'a pas été enregistré car vous avez déjà répondu à cette question.
             Merci d'avoir participé.
         </div>
     </div>
