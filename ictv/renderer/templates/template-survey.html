@@ -9,27 +9,12 @@ $var description: Question + answers (with qr code)
    This software is licensed under the MIT License.
 -->
 
-
-
-
 <style>
-   #question {
-      margin-bottom: 6%;
-   }
    #answers {
       display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      align-items: center;
-      justify-content: space-around;
-      margin-bottom: 6%;
-   }
-   .answer {
-      margin: 4%;
-   }
-   .text-answer {
-      text-align: center;
-      word-wrap: break-word;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin: 6% 3% 6%;
    }
    #results-title {
       margin-bottom: 1%
@@ -80,25 +65,17 @@ $var description: Question + answers (with qr code)
    $:logo(content=slide, number=2, editor_type="image", editor_placeholder="Choisir le logo", editor_label="Logo", editor_order="5")
 </div>
 <div class="content">
-   <div id="question">
-      $:title(content=slide, number=1, max_chars=160, editor_type="text", editor_placeholder="Question", editor_label="Question", editor_default="Question", editor_order="1")
-      <strong>
-         $:text(content=slide, number=0, max_chars=130, editor_type="text", editor_placeholder="Auteur", editor_label="Auteur", editor_default="Auteur", editor_order="2", style="text-align: right; padding-right: 12%")
-      </strong>
-   </div>
+   $:title(content=slide, number=1, max_chars=160, editor_type="text", editor_placeholder="Question", editor_label="Question", editor_default="Question", editor_order="1")
+   $:subtitle(content=slide, number=1, max_chars=130, editor_type="text", editor_placeholder="Subtitle", editor_label="Subtitle", editor_default="Subtitle", editor_order="2")
 
    $if slide:
       $if slide["still-answerable"]:
          <div id="answers">
             $ i = 1
             $while i <= slide['nb-answers']:
-               <div class="answer" style="order: $i">
-                  <div class="qr">
-                     $:img(content=slide, style="max-width: 200px; margin: 1%", number=i, editor_type="image", editor_placeholder="Choisir l'image", editor_label="Fichier image", editor_default="michelfra.gif", editor_order="1")
-                  </div>
-                  <div class="text-answer">
-                     $:text(content=slide, style="max-width: 200px", number=i, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
-                  </div>
+               <div class="answer">
+                  $:img(content=slide, style="flex: 1; max-width: 200px;", number=i, editor_type="image", editor_placeholder="Choisir l'image", editor_label="Fichier image", editor_default="michelfra.gif", editor_order="1")
+                  $:text(content=slide, style="flex: 1; max-width: 200px; text-align: center; word-wrap: break-word",number=i, max_chars=320, editor_type="textarea", editor_placeholder="Texte", editor_label="Texte", editor_default="Texte", editor_order="3")
                </div>
                $ i += 1
          </div>
@@ -109,14 +86,9 @@ $var description: Question + answers (with qr code)
 
    $if slide:
       $if not slide['no-votes']:
-         $if slide['total-nb-votes'] == 1:
-            <div id="total-nb-votes">
-               $:slide['total-nb-votes'] vote
-            </div>
-         $else:
-            <div id="total-nb-votes">
-               $:slide['total-nb-votes'] votes
-            </div>
+         <div id="total-nb-votes">
+            $:slide['total-nb-votes'] vote$('s' if slide['total-nb-votes'] == 1 else '')
+         </div>
       $if slide['show-results']:
          <!-- Show the poll results -->
          <div class="stacked-bar-graph">

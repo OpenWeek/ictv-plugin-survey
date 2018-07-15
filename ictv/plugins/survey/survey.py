@@ -30,7 +30,7 @@ def get_content(channel_id):
     logger = get_logger('survey', channel)
     still_answerable = channel.get_config_param('answerable')
     question = channel.get_config_param('question')
-    author = channel.get_config_param('author')
+    author = channel.get_config_param('subtitle')
     answers = channel.get_config_param('answers')
     display_on_survey = channel.get_config_param('display_on_survey')
 
@@ -231,11 +231,11 @@ class SurveyCapsule(PluginCapsule):
 
 
 class SurveySlide(PluginSlide):
-    def __init__(self, still_answerable, question, author, answers, ratio_votes, total_nb_votes, display_on_survey,
+    def __init__(self, still_answerable, question, subtitle, answers, ratio_votes, total_nb_votes, display_on_survey,
                  channel_id, question_id):
         self._duration = 10000000
         self._content = {'still-answerable': still_answerable, 'title-1': {'text': question},
-                         'text-0': {'text': author}}
+                         'subtitle-1': {'text': subtitle}}
 
         if len(answers) <= 5:
             self._content['nb-answers'] = len(answers)
