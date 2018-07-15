@@ -20,6 +20,7 @@ import web
 
 from ictv.models.channel import PluginChannel
 from ictv.pages.utils import ICTVPage
+from ictv.plugin_manager.plugin_manager import get_logger
 from ictv.plugin_manager.plugin_utils import ChannelGate
 from ictv.plugins.survey import questions_path
 
@@ -30,7 +31,7 @@ def get_app(ictv_app):
     urls = (
         'index', 'ictv.plugins.survey.app.IndexPage',
         'index/(.+)', 'ictv.plugins.survey.app.IndexPage',
-        'validate/(.+)/(.+)', 'ictv.plugins.survey.app.Validate',
+        'confirm/(.+)/(.+)', 'ictv.plugins.survey.app.Confirm',
         'stat/(.+)/(.+)', 'ictv.plugins.survey.app.Stat',
         'stat/(.+)', 'ictv.plugins.survey.app.Stat',
         'modify/(.+)', 'ictv.plugins.survey.app.Modify'
@@ -48,6 +49,7 @@ def get_app(ictv_app):
 
 class SurveyPage(ICTVPage):
     plugin_app = None
+    logger = get_logger('survey')
 
     @property
     def survey_app(self):
@@ -59,33 +61,31 @@ class SurveyPage(ICTVPage):
         """ Returns the webapp renderer. """
         return self.survey_app.renderer
 
+    @property
+    def plugin_logger(self):
+        """ Returns the plugin logger. """
+        return SurveyPage.logger
 
-class Validate(SurveyPage):
-    def GET(self, question_id, answer):
-        question_txt = None
-        answer_txt = None
-        channel_id = -1
+
+class Confirm(SurveyPage):
+    def GET(self, question_id, answer_id):
         try:
             with open(questions_path, 'r') as data_file:
                 data = json.load(data_file)
         except IOError:
-            print("IOError !")
-            traceback.print_exc()
-        else:
-            channel_id = get_channel_id_from_url(web.ctx.homepath)
-            question_entry = get_question_entry(data, channel_id, question_id)
-            question_txt = question_entry['question']
-            i = 1
-            for current_answer in question_entry['answers']:
-                if str(i) == answer:
-                    answer_txt = current_answer['answer']
-                i += 1
+            self.logger.warn('An exception occurred when opening the questions file', exc_info=True)
+            return web.seeother('/')
 
-        url_add = web.ctx.homedomain + '/channels/' + str(channel_id) + '/stat/' + question_id + '/' + answer
+        channel_id = get_channel_id_from_url(web.ctx.homepath)
+        question_entry = get_question_entry(data, channel_id, question_id)
+        question_txt = question_entry['question']
+        answer_txt = question_entry['answers'][int(answer_id) - 1] if int(answer_id) - 1 in question_entry['answers'] else None
+
+        url_add = web.ctx.homedomain + '/channels/' + str(channel_id) + '/stat/' + question_id + '/' + answer_id
         url_cancel = web.ctx.homedomain + '/channels/' + str(channel_id) + '/modify/' + question_id
 
-        if question_txt is None or answer_txt is None:
-            raise KeyError("The survey question or the answers to the question couldn't be found in the JSON file.")
+        if not question_txt or not answer_txt:
+            self.logger.warn('The survey question or the answer to the question couldn\'t be found in the JSON file.')
 
         return self.renderer.template_reponse(answer=answer_txt, question=question_txt, url_add=url_add,
                                               url_cancel=url_cancel)  # + url stat
@@ -193,7 +193,7 @@ class Modify(SurveyPage):
             else:
                 raise KeyError("The question with this ID(%d) is not contained in the JSON file." % question_id)
 
-        url = web.ctx.homedomain + '/channels/' + str(channel_id) + '/validate/' + question_id + '/'
+        url = web.ctx.homedomain + '/channels/' + str(channel_id) + '/confirm/' + question_id + '/'
         return self.renderer.template_modify(answers=answers, question=question_txt, url=url)
 
 

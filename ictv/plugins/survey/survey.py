@@ -245,7 +245,7 @@ class SurveySlide(PluginSlide):
         for answer in answers:
             self._content['text-' + str(i)] = {'text': answer}
             self._content['image-' + str(i)] = {
-                'qrcode': web.ctx.homedomain + '/channels/' + str(channel_id) + '/validate/' + str(
+                'qrcode': web.ctx.homedomain + '/channels/' + str(channel_id) + '/confirm/' + str(
                     question_id) + '/' + str(i)}
             i += 1
 
