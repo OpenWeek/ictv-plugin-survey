@@ -241,13 +241,12 @@ class SurveySlide(PluginSlide):
             self._content['nb-answers'] = len(answers)
         else:
             self._content['nb-answers'] = 5
-        i = 1
-        for answer in answers:
-            self._content['text-' + str(i)] = {'text': answer}
-            self._content['image-' + str(i)] = {
-                'qrcode': web.ctx.homedomain + '/channels/' + str(channel_id) + '/confirm/' + str(
-                    question_id) + '/' + str(i)}
-            i += 1
+        for i, answer in enumerate(answers):
+            i = str(i)
+            self._content['text-' + i] = {'text': answer}
+            self._content['image-' + i] = {
+                'qrcode': web.ctx.homedomain + '/channels/' + str(channel_id) + '/confirm/' + str(question_id) + '/' + i
+            }
 
         self._content['total-nb-votes'] = total_nb_votes
         if display_on_survey:
