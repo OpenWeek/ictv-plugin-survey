@@ -242,7 +242,7 @@ class SurveySlide(PluginSlide):
         else:
             self._content['nb-answers'] = 5
         for i, answer in enumerate(answers):
-            i = str(i)
+            i = str(i + 1)
             self._content['text-' + i] = {'text': answer}
             self._content['image-' + i] = {
                 'qrcode': web.ctx.homedomain + '/channels/' + str(channel_id) + '/confirm/' + str(question_id) + '/' + i
